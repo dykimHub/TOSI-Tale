@@ -21,12 +21,13 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
         return Optional.ofNullable(queryFactory.select(new QTaleDto(
                         tale.taleId,
                         tale.title,
-                        tale.thumbnailS3URL,
+                        tale.thumbnailS3Key,
                         tale.time))
                 .from(tale)
                 .fetch());
 
 
-
     }
+
+
 }
