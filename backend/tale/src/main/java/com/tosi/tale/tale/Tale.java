@@ -2,7 +2,6 @@ package com.tosi.tale.tale;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,15 +13,15 @@ public class Tale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int taleId;
+    private long taleId;
     @Column(name = "title", nullable = false)
     private String title;
-    @Column(name = "content_s3_url", nullable = false)
-    private String contentS3URL;
-    @Column(name = "thumbnail_s3_url", nullable = false)
-    private String thumbnailS3URL;
-    @Column(name = "images_s3_url", nullable = false)
-    private String imagesS3URL;
+    @Column(name = "content_s3_key", nullable = false)
+    private String contentS3Key;
+    @Column(name = "thumbnail_s3_key", nullable = false)
+    private String thumbnailS3Key;
+    @Column(name = "images_s3_key_prefix", nullable = false)
+    private String imagesS3KeyPrefix;
     @Column(name = "time", nullable = false)
     private int time;
 
