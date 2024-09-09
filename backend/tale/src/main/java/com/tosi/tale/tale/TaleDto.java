@@ -1,23 +1,29 @@
 package com.tosi.tale.tale;
 
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Builder
-@Data
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TaleDto {
 
     private int taleId;
     private String title;
-    private String content1;
-    private String content2;
-    private String content3;
-    private String content4;
-    private String total_contents;
-    private String[] images;
-    private String thumbnail;
-    private String[] characters;
+    private String thumbnailS3URL;
     private int time;
-    private int likeCnt;
+
+    @QueryProjection
+    @Builder
+    public TaleDto(int taleId, String title, String thumbnailS3URL, int time) {
+        this.taleId = taleId;
+        this.title = title;
+        this.thumbnailS3URL = thumbnailS3URL;
+        this.time = time;
+    }
+
+
 
 }
