@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,14 +26,14 @@ public class TaleController {
         return ResponseEntity.ok()
                 .body(taleDtoList);
     }
-//
-//    /**
-//     * taleId 기준으로 하나만 조회
-//     */
-//    @GetMapping("/tale/{taleId}")
-//    public ResponseEntity<Tale> getTale(HttpServletRequest request, @PathVariable int taleId) {
-//        return new ResponseEntity<>(taleService.selectOneTale(taleId), HttpStatus.OK);
-//    }
+
+    @Operation(summary = "동화 상세 조회")
+    @GetMapping("/{taleId}")
+    public ResponseEntity<TaleDetailDto> findTale(@PathVariable Long taleId) {
+        TaleDetailDto taleDetailDto = taleService.findTale(taleId);
+        return ResponseEntity.ok()
+                .body(taleDetailDto);
+    }
 
 //    /**
 //     * 이름으로 검색

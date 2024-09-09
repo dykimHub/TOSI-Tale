@@ -35,4 +35,30 @@ public class TaleServiceImpl implements TaleService {
                 .toList();
     }
 
+    /**
+     * 동화 본문, 등장인물, 삽화 등을 포함한 상세 정보를 TaleDetailDto 객체로 반환합니다.
+     *
+     * @param taleId Tale 객체 id
+     * @return TaleDetailDto 객체
+     * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
+     */
+    @Override
+    public TaleDetailDto findTale(Long taleId) {
+        TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTale(taleId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
+
+        String[] contents = s3Service.findContents(taleDetailS3Dto.getContentS3Key());
+        String[] characters = s3Service.findCharacters(taleDetailS3Dto.getContentS3Key());
+        List<String> images = s3Service.findImages(taleDetailS3Dto.getImageS3KeyPrefix());
+
+        return TaleDetailDto.builder()
+                .taleId(taleDetailS3Dto.getTaleId())
+                .title(taleDetailS3Dto.getTitle())
+                .time(taleDetailS3Dto.getTime())
+                .contents(contents)
+                .characters(characters)
+                .images(images)
+                .build();
+    }
+
 }

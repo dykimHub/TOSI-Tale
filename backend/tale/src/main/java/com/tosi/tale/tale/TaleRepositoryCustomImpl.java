@@ -28,6 +28,25 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
 
 
     }
+    /**
+     * 해당 id의 Tale 엔티티를 TaleDetailS3Dto 객체로 변환하여 반환합니다.
+     *
+     * @param taleId Tale 객체 id
+     * @return Optional로 감싼 TaleDetailS3Dto 객체
+     */
+    @Override
+    public Optional<TaleDetailS3Dto> findTale(Long taleId) {
+        QTale tale = QTale.tale;
+        return Optional.ofNullable(queryFactory.select(new QTaleDetailS3Dto(
+                        tale.taleId,
+                        tale.title,
+                        tale.contentS3Key,
+                        tale.imagesS3KeyPrefix,
+                        tale.time))
+                .from(tale)
+                .where(tale.taleId.eq(taleId))
+                .fetchOne());
+    }
 
 
 }
