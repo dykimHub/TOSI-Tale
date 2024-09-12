@@ -1,6 +1,5 @@
 package com.tosi.tale.tale;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ public class TaleDetailDto {
 
     private long taleId;
     private String title;
-    private int time;
+    private int ttsLength;
     private String[] contents;
     private String[] characters;
     private List<String> images;
@@ -24,10 +23,10 @@ public class TaleDetailDto {
      * contentS3Key -> contents, characters / imagesS3KeyPrefix -> images
      */
     @Builder
-    public TaleDetailDto(long taleId, String title, int time, String[] contents, String[] characters, List<String> images) {
+    public TaleDetailDto(long taleId, String title, int ttsLength, String[] contents, String[] characters, List<String> images) {
         this.taleId = taleId;
         this.title = title;
-        this.time = time;
+        this.ttsLength = ttsLength;
         this.contents = contents;
         this.characters = characters;
         this.images = images;

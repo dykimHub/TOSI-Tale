@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.OffsetDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +25,11 @@ public class Tale {
     private String thumbnailS3Key;
     @Column(name = "images_s3_key_prefix", nullable = false)
     private String imagesS3KeyPrefix;
-    @Column(name = "time", nullable = false)
-    private int time;
+    @Column(name = "tts_length", nullable = false)
+    private int ttsLength;
+    @CreationTimestamp
+    @Column(name = "reg_date", nullable = false)
+    private OffsetDateTime regDate;
+
 
 }
