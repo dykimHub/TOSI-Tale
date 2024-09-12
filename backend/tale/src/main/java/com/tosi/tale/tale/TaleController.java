@@ -22,9 +22,9 @@ public class TaleController {
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<List<TaleDto>> findTaleList(@PageableDefault(size = 9, sort = "title") Pageable pageable) {
+    public ResponseEntity<TaleDto.TaleDtos> findTaleList(@PageableDefault(size = 9, sort = "title") Pageable pageable) {
         // JPA에서 쿼리 파라미터를 읽어 Pageable 객체로 반환
-        List<TaleDto> taleDtoList = taleService.findTaleList(pageable);
+        TaleDto.TaleDtos taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
                 .body(taleDtoList);
     }

@@ -4,7 +4,7 @@ import com.tosi.tale.common.exception.CustomException;
 import com.tosi.tale.common.exception.ExceptionCode;
 import com.tosi.tale.s3.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -20,19 +20,23 @@ public class TaleServiceImpl implements TaleService {
      * 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return TaleDto 객체 리스트
+     * @return TaleDto 객체 리스트를 감싼 TaleDtos 객체
      * @throws CustomException 동화 목록이 없을 경우 예외 처리
      */
+    @Cacheable(value = "taleListCache", key = "#pageable.pageNumber")
     @Override
-    public List<TaleDto> findTaleList(Pageable pageable) {
+    public TaleDto.TaleDtos findTaleList(Pageable pageable) {
         List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable)
                 .orElseThrow(() -> new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND));
 
-        return taleDtoList.stream()
-                .map(taleDto -> taleDto.withThumbnailS3URL(
-                        s3Service.findS3URL(taleDto.getThumbnailS3Key()))
-                )
-                .toList();
+        // s3Service에서 썸네일 URL을 추가하고 TaleDtos 객체로 변환
+        return new TaleDto.TaleDtos(
+                taleDtoList.stream()
+                        .map(taleDto -> taleDto.withThumbnailS3URL(
+                                s3Service.findS3URL(taleDto.getThumbnailS3Key()))
+                        )
+                        .toList()
+        );
     }
 
     /**
@@ -42,6 +46,7 @@ public class TaleServiceImpl implements TaleService {
      * @return TaleDetailDto 객체
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
+    @Cacheable(value = "taleCache", key = "#taleId")
     @Override
     public TaleDetailDto findTale(Long taleId) {
         TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTale(taleId)
