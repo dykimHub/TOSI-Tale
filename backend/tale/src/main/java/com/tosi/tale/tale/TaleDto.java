@@ -1,7 +1,11 @@
 package com.tosi.tale.tale;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ToString
@@ -39,4 +43,18 @@ public class TaleDto {
         this.ttsLength = ttsLength;
     }
 
+    /*
+     * Wrapper Class; TaleDto 객체 리스트를 하나의 객체로 감싸는 클래스
+     * Redis에 TaleDto 객체 리스트를 저장할 때 단일 객체로 감싸서 직렬화/역직렬화 과정에서 명확한 구조 유지
+     */
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class TaleDtos {
+        private List<TaleDto> taleDtos;
+
+        public TaleDtos(List<TaleDto> taleDtos) {
+            this.taleDtos = taleDtos;
+        }
+    }
 }
+
