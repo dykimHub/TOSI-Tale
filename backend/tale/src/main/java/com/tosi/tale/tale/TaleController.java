@@ -3,6 +3,8 @@ package com.tosi.tale.tale;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,13 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class TaleController {
-
     private final TaleService taleService;
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<List<TaleDto>> findTaleList() {
-        List<TaleDto> taleDtoList = taleService.findTaleList();
+    public ResponseEntity<List<TaleDto>> findTaleList(@PageableDefault(size = 9, sort = "title") Pageable pageable) {
+        // JPA에서 쿼리 파라미터를 읽어 Pageable 객체로 반환
+        List<TaleDto> taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
                 .body(taleDtoList);
     }
@@ -34,6 +36,7 @@ public class TaleController {
         return ResponseEntity.ok()
                 .body(taleDetailDto);
     }
+
 
 //    /**
 //     * 이름으로 검색

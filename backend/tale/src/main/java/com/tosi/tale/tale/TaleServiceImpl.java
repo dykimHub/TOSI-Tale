@@ -1,14 +1,13 @@
 package com.tosi.tale.tale;
 
-import com.amazonaws.services.s3.model.S3Object;
 import com.tosi.tale.common.exception.CustomException;
 import com.tosi.tale.common.exception.ExceptionCode;
 import com.tosi.tale.s3.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -18,14 +17,15 @@ public class TaleServiceImpl implements TaleService {
     private final S3Service s3Service;
 
     /**
-     * 동화 목록을 TaleDto 객체 리스트로 반환합니다.
+     * 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
      *
+     * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
      * @return TaleDto 객체 리스트
      * @throws CustomException 동화 목록이 없을 경우 예외 처리
      */
     @Override
-    public List<TaleDto> findTaleList() {
-        List<TaleDto> taleDtoList = taleRepository.findTaleList()
+    public List<TaleDto> findTaleList(Pageable pageable) {
+        List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable)
                 .orElseThrow(() -> new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND));
 
         return taleDtoList.stream()
@@ -54,7 +54,7 @@ public class TaleServiceImpl implements TaleService {
         return TaleDetailDto.builder()
                 .taleId(taleDetailS3Dto.getTaleId())
                 .title(taleDetailS3Dto.getTitle())
-                .time(taleDetailS3Dto.getTime())
+                .ttsLength(taleDetailS3Dto.getTtsLength())
                 .contents(contents)
                 .characters(characters)
                 .images(images)
