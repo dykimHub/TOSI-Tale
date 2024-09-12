@@ -10,4 +10,6 @@ public interface TaleRepositoryCustom {
     Optional<List<TaleDto>> findTaleList(Pageable pageable);
 
     Optional<TaleDetailS3Dto> findTale(Long taleId);
+
+    List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
 }

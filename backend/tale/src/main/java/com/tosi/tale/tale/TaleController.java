@@ -6,12 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @Slf4j
 @RequestMapping("/api/tales")
@@ -22,7 +20,7 @@ public class TaleController {
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<TaleDto.TaleDtos> findTaleList(@PageableDefault(size = 9, sort = "title") Pageable pageable) {
+    public ResponseEntity<TaleDto.TaleDtos> findTaleList(@PageableDefault(size = 9, sort = "regDate") Pageable pageable) {
         // JPA에서 쿼리 파라미터를 읽어 Pageable 객체로 반환
         TaleDto.TaleDtos taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
@@ -37,28 +35,16 @@ public class TaleController {
                 .body(taleDetailDto);
     }
 
+    @Operation(summary = "동화 제목으로 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<TaleDto>> findTaleByTitle(@RequestParam String titlePart, @PageableDefault(size = 9, sort = "title") Pageable pageable) {
+        // JPA에서 쿼리 파라미터를 읽어 Pageable 객체로 반환
+        List<TaleDto> taleDtoList = taleService.findTaleByTitle(titlePart, pageable);
+        return ResponseEntity.ok()
+                .body(taleDtoList);
+    }
 
-//    /**
-//     * 이름으로 검색
-//     */
-//    @GetMapping("/search")
-//    public ResponseEntity<?> searchTale(HttpServletRequest request, @RequestParam(required = false) String title) {
-//        try {
-//            if(title == null || title.trim().isEmpty()) {
-//                throw new IllegalArgumentException("검색어를 입력하세요.");
-//            }
-//
-//            List<TaleDto> list = taleService.selectByTitle(title);
-//
-//            if(list.isEmpty()) {
-//                throw new NoTalesFoundException("일치하는 결과를 찾을 수 없습니다.");
-//            } else {
-//                return new ResponseEntity<>(list, HttpStatus.OK);
-//            }
-//        } catch (IllegalArgumentException  e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        } catch ( NoTalesFoundException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-//        }
-//    }
+
+
+
 }

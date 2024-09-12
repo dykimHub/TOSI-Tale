@@ -29,7 +29,6 @@ public class TaleServiceImpl implements TaleService {
         List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable)
                 .orElseThrow(() -> new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND));
 
-        // s3Service에서 썸네일 URL을 추가하고 TaleDtos 객체로 변환
         return new TaleDto.TaleDtos(
                 taleDtoList.stream()
                         .map(taleDto -> taleDto.withThumbnailS3URL(
@@ -64,6 +63,21 @@ public class TaleServiceImpl implements TaleService {
                 .characters(characters)
                 .images(images)
                 .build();
+    }
+
+    /**
+     * 제목의 일부를 포함하는 동화 목록을 TaleDto 객체 리스트로 반환합니다.
+     *
+     * @param titlePart 검색할 동화 제목 일부
+     * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
+     * @return 검색된 제목을 포함하는 TaleDto 객체 리스트
+     */
+    @Override
+    public List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable) {
+        return taleRepository.findTaleByTitle(titlePart, pageable).stream()
+                .map(t -> t.withThumbnailS3URL(
+                        s3Service.findS3URL(t.getThumbnailS3Key())))
+                .toList();
     }
 
 }
