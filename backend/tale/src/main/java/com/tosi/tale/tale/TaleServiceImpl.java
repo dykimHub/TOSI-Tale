@@ -98,8 +98,13 @@ public class TaleServiceImpl implements TaleService {
                 talePageRequestDto.getTaleDetailDto().getCharacters(),
                 talePageRequestDto.getNameMap()
         );
+        String[] splitContent = changedContent.split("-----");
+        List<TalePageResponseDto> talePageResponseDtoList = matchImagesWithContent(
+                splitContent,
+                talePageRequestDto.getTaleDetailDto().getImages()
+        );
 
-        return List.of();
+        return talePageResponseDtoList;
     }
 
 
@@ -131,6 +136,42 @@ public class TaleServiceImpl implements TaleService {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 이름이 매핑된 동화로 페이지를 생성합니다.
+     * 왼쪽 페이지는 삽화가 포함되고, 오른쪽 페이지는 동화 본문을 2문장씩 삽입합니다.
+     *
+     * @param splitContent 한 삽화에 대응하는 본문 내용 배열
+     * @param images 삽화 주소 리스트
+     * @return TalePageResponseDto 객체 리스트
+     */
+    private List<TalePageResponseDto> matchImagesWithContent(String[] splitContent, List<String> images) {
+        int pageNum = 1;
+        List<TalePageResponseDto> talePageResponseDtoList = new ArrayList<>();
+
+        for (int i = 0; i < images.size(); i++) {
+            String currImgS3URL = images.get(i);
+            String[] lines = splitContent[i].split("\n"); // 문장 단위 배열
+
+            for (int j = 0; j < lines.length; j += 2) {
+                String line1 = lines[j];
+                // line1이 마지막 문장이면 다음 문장은 빈 문장
+                String line2 = (j + 1 < lines.length) ? lines[j + 1] : "";
+
+                talePageResponseDtoList.add(
+                        TalePageResponseDto.builder()
+                                .leftNo(pageNum++)
+                                .left(currImgS3URL)
+                                .rightNo(pageNum++)
+                                .right(line1 + "\n" + line2)
+                                .build()
+                );
+            }
+
+        }
+
+        return talePageResponseDtoList;
     }
 
 }
