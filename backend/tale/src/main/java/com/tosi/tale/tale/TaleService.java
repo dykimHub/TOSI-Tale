@@ -12,4 +12,6 @@ public interface TaleService {
     TaleDetailDto findTale(Long taleId);
 
     List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
+
+    List<TalePageResponseDto> createTalePages(TalePageRequestDto talePageRequestDto);
 }

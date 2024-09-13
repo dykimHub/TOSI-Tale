@@ -44,7 +44,13 @@ public class TaleController {
                 .body(taleDtoList);
     }
 
-
+    @Operation(summary = "등장인물 이름을 매핑하고 각 페이지 생성")
+    @PostMapping("/read")
+    public ResponseEntity<List<TalePageResponseDto>> createTalePages(@RequestBody TalePageRequestDto talePageRequestDto) {
+        List<TalePageResponseDto> talePageResponseDtoList = taleService.createTalePages(talePageRequestDto);
+        return ResponseEntity.ok()
+                .body(talePageResponseDtoList);
+    }
 
 
 }
