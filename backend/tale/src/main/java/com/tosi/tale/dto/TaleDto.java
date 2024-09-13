@@ -1,10 +1,8 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.dto;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

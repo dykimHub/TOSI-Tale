@@ -1,5 +1,10 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.controller;
 
+import com.tosi.tale.dto.TaleDetailDto;
+import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TalePageRequestDto;
+import com.tosi.tale.dto.TalePageResponseDto;
+import com.tosi.tale.service.TaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

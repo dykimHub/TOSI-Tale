@@ -1,6 +1,7 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.LinkedHashMap;
 

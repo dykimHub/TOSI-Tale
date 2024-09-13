@@ -1,4 +1,4 @@
-package com.tosi.tale.s3;
+package com.tosi.tale.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -111,7 +111,7 @@ public class S3ServiceImpl implements S3Service {
                 .build();
 
         ListObjectsV2Response listObjectsV2Response = s3Client.listObjectsV2(listObjectsV2Request);
-        if(listObjectsV2Response == null){
+        if (listObjectsV2Response == null) {
             throw new CustomException(ExceptionCode.TALE_IMAGES_FETCH_FAIL);
         }
 
@@ -120,8 +120,6 @@ public class S3ServiceImpl implements S3Service {
                 .map(s3Object -> findS3URL(s3Object.key()))
                 .toList();
     }
-
-
 
 
 }

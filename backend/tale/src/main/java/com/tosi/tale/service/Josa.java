@@ -1,4 +1,4 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.service;
 
 public class Josa {
     public String appendJosa(String word, String josa) {

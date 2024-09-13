@@ -1,8 +1,9 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.service;
 
 import com.tosi.tale.common.exception.CustomException;
 import com.tosi.tale.common.exception.ExceptionCode;
-import com.tosi.tale.s3.S3Service;
+import com.tosi.tale.dto.*;
+import com.tosi.tale.repository.TaleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -90,7 +91,7 @@ public class TaleServiceImpl implements TaleService {
      */
     @Override
     public List<TalePageResponseDto> createTalePages(TalePageRequestDto talePageRequestDto) {
-        if(talePageRequestDto == null)
+        if (talePageRequestDto == null)
             throw new CustomException(ExceptionCode.PAGE_REQUEST_NOT_FOUND);
 
         String changedContent = replaceToUserName(
@@ -143,7 +144,7 @@ public class TaleServiceImpl implements TaleService {
      * 왼쪽 페이지는 삽화가 포함되고, 오른쪽 페이지는 동화 본문을 2문장씩 삽입합니다.
      *
      * @param splitContent 한 삽화에 대응하는 본문 내용 배열
-     * @param images 삽화 주소 리스트
+     * @param images       삽화 주소 리스트
      * @return TalePageResponseDto 객체 리스트
      */
     private List<TalePageResponseDto> matchImagesWithContent(String[] splitContent, List<String> images) {

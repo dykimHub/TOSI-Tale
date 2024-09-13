@@ -1,6 +1,10 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.service;
 
 
+import com.tosi.tale.dto.TaleDetailDto;
+import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TalePageRequestDto;
+import com.tosi.tale.dto.TalePageResponseDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

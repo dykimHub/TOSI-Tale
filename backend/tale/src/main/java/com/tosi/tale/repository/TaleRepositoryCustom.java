@@ -1,5 +1,7 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.repository;
 
+import com.tosi.tale.dto.TaleDetailS3Dto;
+import com.tosi.tale.dto.TaleDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

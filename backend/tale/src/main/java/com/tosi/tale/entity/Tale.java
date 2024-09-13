@@ -1,4 +1,4 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

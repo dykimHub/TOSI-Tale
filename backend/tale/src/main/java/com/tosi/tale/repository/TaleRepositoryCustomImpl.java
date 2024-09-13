@@ -1,9 +1,15 @@
-package com.tosi.tale.tale;
+package com.tosi.tale.repository;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tosi.tale.dto.QTaleDetailS3Dto;
+import com.tosi.tale.dto.QTaleDto;
+import com.tosi.tale.dto.TaleDetailS3Dto;
+import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.entity.QTale;
+import com.tosi.tale.entity.Tale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,7 +72,7 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
      * 검색된 Tale 엔티티 리스트를 TaleDto 객체 리스트로 변환하여 반환합니다.
      *
      * @param titlePart 검색할 동화 제목 일부
-     * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
+     * @param pageable  페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
      * @return TaleDto 객체 리스트(결과가 없을 경우 빈 리스트 반환)
      */
     @Override

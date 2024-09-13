@@ -1,4 +1,4 @@
-package com.tosi.tale.s3;
+package com.tosi.tale.service;
 
 import com.amazonaws.services.s3.model.S3Object;
 
