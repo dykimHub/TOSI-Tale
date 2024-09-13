@@ -60,7 +60,7 @@ public class S3ServiceImpl implements S3Service {
      * @throws CustomException 파일을 읽을 수 없는 경우 예외 처리
      */
     @Override
-    public String[] findContents(String s3Key) {
+    public String findContents(String s3Key) {
         // try-with-resoures; 텍스트 파일을 버퍼로 읽고 자동으로 스트림을 닫음
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 findS3Object(s3Key).getObjectContent()))) {
@@ -72,7 +72,7 @@ public class S3ServiceImpl implements S3Service {
                 sb.append(line).append("\n");
             }
 
-            return sb.toString().split("-----");
+            return sb.toString();
         } catch (IOException e) {
             throw new CustomException(ExceptionCode.TALE_CONTENT_FETCH_FAIL);
         }

@@ -1,11 +1,9 @@
 package com.tosi.tale.common.exception;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class SuccessResponse {

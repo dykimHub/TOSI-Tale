@@ -13,8 +13,7 @@ public class TaleDetailDto {
 
     private long taleId;
     private String title;
-    private int ttsLength;
-    private String[] contents;
+    private String content;
     private String[] characters;
     private List<String> images;
 
@@ -23,11 +22,10 @@ public class TaleDetailDto {
      * contentS3Key -> contents, characters / imagesS3KeyPrefix -> images
      */
     @Builder
-    public TaleDetailDto(long taleId, String title, int ttsLength, String[] contents, String[] characters, List<String> images) {
+    public TaleDetailDto(long taleId, String title, String content, String[] characters, List<String> images) {
         this.taleId = taleId;
         this.title = title;
-        this.ttsLength = ttsLength;
-        this.contents = contents;
+        this.content = content;
         this.characters = characters;
         this.images = images;
     }

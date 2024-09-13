@@ -11,7 +11,6 @@ public class TaleDetailS3Dto {
 
     private long taleId;
     private String title;
-    private int ttsLength;
     private String contentS3Key;
     private String imageS3KeyPrefix;
 
@@ -19,12 +18,10 @@ public class TaleDetailS3Dto {
      * Tale 엔티티에서 필요한 행만 매핑할 객체(thumbnailS3Key 미포함)
      */
     @QueryProjection
-    public TaleDetailS3Dto(long taleId, String title, String contentS3Key, String imageS3KeyPrefix, int ttsLength){
+    public TaleDetailS3Dto(long taleId, String title, String contentS3Key, String imageS3KeyPrefix){
         this.taleId = taleId;
         this.title = title;
         this.contentS3Key = contentS3Key;
         this.imageS3KeyPrefix = imageS3KeyPrefix;
-        this.ttsLength = ttsLength;
-
     }
 }

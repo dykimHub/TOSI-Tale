@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ce) {
         ErrorResponse errorResponse = ErrorResponse.of(ce.getExceptionCode());
-        //log.info(ce.getMessage());
+        log.info(errorResponse.toString());
         return ResponseEntity.status(errorResponse.getStatus())
                 .body(errorResponse);
 
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        //log.info(e.getMessage());
+        log.info(errorResponse.toString());
         return ResponseEntity.status(errorResponse.getStatus())
                 .body(errorResponse);
 

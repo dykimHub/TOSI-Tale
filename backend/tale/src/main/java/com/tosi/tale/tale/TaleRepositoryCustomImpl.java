@@ -55,8 +55,7 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
                         tale.taleId,
                         tale.title,
                         tale.contentS3Key,
-                        tale.imagesS3KeyPrefix,
-                        tale.ttsLength))
+                        tale.imagesS3KeyPrefix))
                 .from(tale)
                 .where(tale.taleId.eq(taleId))
                 .fetchOne()

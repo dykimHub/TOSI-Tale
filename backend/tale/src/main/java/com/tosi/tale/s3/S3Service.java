@@ -10,7 +10,7 @@ public interface S3Service {
 
     String findS3URL(String s3key);
 
-    String[] findContents(String s3Key);
+    String findContents(String s3Key);
 
     String[] findCharacters(String s3Key);
 
