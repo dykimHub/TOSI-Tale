@@ -32,10 +32,18 @@ public class TaleController {
                 .body(taleDtoList);
     }
 
-    @Operation(summary = "동화 상세 조회")
+    @Operation(summary = "동화 정보 조회")
     @GetMapping("/{taleId}")
-    public ResponseEntity<TaleDetailDto> findTale(@PathVariable Long taleId) {
-        TaleDetailDto taleDetailDto = taleService.findTale(taleId);
+    public ResponseEntity<TaleDto> findTaleList(@PathVariable Long taleId) {
+        TaleDto taleDto = taleService.findTale(taleId);
+        return ResponseEntity.ok()
+                .body(taleDto);
+    }
+
+    @Operation(summary = "동화 내용 조회")
+    @GetMapping("/content/{taleId}")
+    public ResponseEntity<TaleDetailDto> findTaleDetail(@PathVariable Long taleId) {
+        TaleDetailDto taleDetailDto = taleService.findTaleDetail(taleId);
         return ResponseEntity.ok()
                 .body(taleDetailDto);
     }
