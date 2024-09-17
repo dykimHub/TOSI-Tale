@@ -1,6 +1,11 @@
 package com.tosi.tale.service;
 
-public class Josa {
+import org.springframework.stereotype.Service;
+
+@Service
+public class JosaServiceImpl implements JosaService {
+
+    @Override
     public String appendJosa(String word, String josa) {
         switch (josa) {
             case "이":
