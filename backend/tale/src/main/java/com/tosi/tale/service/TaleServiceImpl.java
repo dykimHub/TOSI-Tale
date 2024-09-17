@@ -43,6 +43,20 @@ public class TaleServiceImpl implements TaleService {
     }
 
     /**
+     * 동화 제목, 동화 표지, TTS 구연 시간 등을 포함한 동화 정보를 반환합니다.
+     *
+     * @param taleId Tale 객체 id
+     * @return S3 Key로 생성한 S3 URL을 포함한 TaleDTO 객체 반환
+     * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
+     */
+    @Override
+    public TaleDto findTale(Long taleId) {
+        TaleDto taleDto = taleRepository.findTale(taleId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
+        return taleDto.withThumbnailS3URL(s3Service.findS3URL(taleDto.getThumbnailS3Key()));
+    }
+
+    /**
      * 동화 본문, 등장인물, 삽화 등을 포함한 상세 정보를 TaleDetailDto 객체로 반환합니다.
      *
      * @param taleId Tale 객체 id
@@ -51,8 +65,8 @@ public class TaleServiceImpl implements TaleService {
      */
     @Cacheable(value = "taleCache", key = "#taleId")
     @Override
-    public TaleDetailDto findTale(Long taleId) {
-        TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTale(taleId)
+    public TaleDetailDto findTaleDetail(Long taleId) {
+        TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTaleDetail(taleId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
 
         String content = s3Service.findContents(taleDetailS3Dto.getContentS3Key());
