@@ -18,10 +18,11 @@ import java.util.List;
 public class TaleServiceImpl implements TaleService {
     private final TaleRepository taleRepository;
     private final S3Service s3Service;
-    private final Josa josa = new Josa();
+    private final JosaService josaService;
 
     /**
      * 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
+     * 페이지별 동화 목록(#페이지번호)을 캐시에 등록합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
      * @return TaleDto 객체 리스트를 감싼 TaleDtos 객체
@@ -58,6 +59,7 @@ public class TaleServiceImpl implements TaleService {
 
     /**
      * 동화 본문, 등장인물, 삽화 등을 포함한 상세 정보를 TaleDetailDto 객체로 반환합니다.
+     * 동화 본문과 관련된 정보(#동화번호)를 캐시에 등록합니댜.
      *
      * @param taleId Tale 객체 id
      * @return TaleDetailDto 객체
@@ -143,7 +145,7 @@ public class TaleServiceImpl implements TaleService {
                 int josaIdx = characterIdx + character.length(); // 조사 인덱스
                 String currJosa = (josaIdx < sb.length()) ? sb.substring(josaIdx, josaIdx + 1) : ""; // 조사
 
-                String updatedNameAndJosa = user + josa.appendJosa(user, currJosa); // 사용자 이름 + 새로운 조사 문자열
+                String updatedNameAndJosa = user + josaService.appendJosa(user, currJosa); // 사용자 이름 + 새로운 조사 문자열
                 sb.replace(characterIdx, josaIdx + 1, updatedNameAndJosa);  // 등장인물 이름 + 기존 조사를 위 문자열로 교체
 
                 characterIdx = sb.indexOf(character, characterIdx + updatedNameAndJosa.length());

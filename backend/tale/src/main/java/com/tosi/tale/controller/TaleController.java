@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class TaleController {
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<TaleDto.TaleDtos> findTaleList(@PageableDefault(size = 9, sort = "regDate") Pageable pageable) {
+    public ResponseEntity<TaleDto.TaleDtos> findTaleList(@PageableDefault(size = 9, sort = "regDate", direction = Sort.Direction.DESC) Pageable pageable) {
         // JPA에서 쿼리 파라미터를 읽어 Pageable 객체로 반환
         TaleDto.TaleDtos taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
