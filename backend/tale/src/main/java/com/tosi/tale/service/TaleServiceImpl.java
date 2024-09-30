@@ -5,9 +5,14 @@ import com.tosi.tale.common.exception.ExceptionCode;
 import com.tosi.tale.dto.*;
 import com.tosi.tale.repository.TaleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,6 +24,9 @@ public class TaleServiceImpl implements TaleService {
     private final TaleRepository taleRepository;
     private final S3Service s3Service;
     private final JosaService josaService;
+    private final RestTemplate restTemplate;
+    @Value("${service.user.url}")
+    private String userURL;
 
     /**
      * 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
@@ -122,6 +130,27 @@ public class TaleServiceImpl implements TaleService {
         );
 
         return talePageResponseDtoList;
+    }
+
+    /**
+     * 회원 서비스로 토큰을 보내고 인증이 완료되면 회원 번호를 반환합니다.
+     *
+     * @param accessToken 로그인한 회원의 토큰
+     * @return 회원 번호
+     * @throws CustomException 인증에 성공하지 못하면 예외 처리
+     */
+    @Override
+    public Long findUserAuthorization(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", accessToken);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        try {
+            Long userId = restTemplate.exchange(userURL + "auth",
+                    HttpMethod.GET, httpEntity, Long.class).getBody();
+            return userId;
+        } catch (Exception e) {
+            throw new CustomException(ExceptionCode.INVALID_TOKEN);
+        }
     }
 
 

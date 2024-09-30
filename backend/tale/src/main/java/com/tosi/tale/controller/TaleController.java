@@ -60,7 +60,8 @@ public class TaleController {
 
     @Operation(summary = "등장인물 이름을 매핑하고 각 페이지 생성")
     @PostMapping("/read")
-    public ResponseEntity<List<TalePageResponseDto>> createTalePages(@RequestBody TalePageRequestDto talePageRequestDto) {
+    public ResponseEntity<List<TalePageResponseDto>> createTalePages(@RequestHeader("Authorization") String accessToken, @RequestBody TalePageRequestDto talePageRequestDto) {
+        Long userId = taleService.findUserAuthorization(accessToken);
         List<TalePageResponseDto> talePageResponseDtoList = taleService.createTalePages(talePageRequestDto);
         return ResponseEntity.ok()
                 .body(talePageResponseDtoList);

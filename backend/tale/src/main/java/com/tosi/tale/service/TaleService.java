@@ -21,4 +21,5 @@ public interface TaleService {
 
     List<TalePageResponseDto> createTalePages(TalePageRequestDto talePageRequestDto);
 
+    Long findUserAuthorization(String accessToken);
 }
