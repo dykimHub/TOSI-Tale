@@ -39,4 +39,4 @@ spec:
             - name: REDIS_URL
               value: tosi-cc-svc.default
             - name: USER_URL
-              value: tosi-user-svc.default
+              value: http://tosi-user-svc.default/api/users
