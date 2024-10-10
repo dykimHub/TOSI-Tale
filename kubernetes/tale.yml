@@ -4,7 +4,7 @@ metadata:
   name: tosi-tale-svc
 spec:
   selector:
-    app: tosi
+    app: tosi-tale
     tier: backend
   ports:
     - port: 80 # 80으로 연결하면 http 기본 포트이기 때문에 포트 명시 필요없음
@@ -19,12 +19,12 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: tosi
+      app: tosi-tale
       tier: backend
   template:
     metadata:
       labels:
-        app: tosi
+        app: tosi-tale
         tier: backend
     spec:
       containers:
