@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tale-pvc
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce # ebs는 하나의 ec2(노드)만 연결할 수 있어서 ReadWriteMany 불가
+  storageClassName: tosi-ebs-sc
+  resources:
+    requests:
+      storage: 5Gi
