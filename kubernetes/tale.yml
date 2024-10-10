@@ -9,7 +9,7 @@ spec:
   ports:
     - port: 80 # 80으로 연결하면 http 기본 포트이기 때문에 포트 명시 필요없음
       targetPort: 8080
-  type: LoadBalancer # 임시로 외부에 노출
+  type: ClusterIP # ingress가 외부 명령을 받아서 전달
 ---
 apiVersion: apps/v1
 kind: Deployment

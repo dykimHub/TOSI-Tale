@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tosi-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+  labels:
+    app: ingress
+spec:
+  ingressClassName: alb
+  rules:
+    - host: www.tosi.world
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/api/users"
+            backend:
+              service:
+                name: tosi-user-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: "/api/tales"
+            backend:
+              service:
+                name: tosi-tale-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: "/api/custom-tales"
+            backend:
+              service:
+                name: tosi-customtale-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: "/api/chat"
+            backend:
+              service:
+                name: tosi-chat-svc
+                port:
+                  number: 80
