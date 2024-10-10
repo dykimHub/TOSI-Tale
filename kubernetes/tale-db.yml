@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tosi-db-tale-svc
+spec:
+  selector:
+    app: tosi
+    tier: database
+  ports:
+    - port: 3306 # mysql과 동일 포트로 연결해야 함
+      targetPort: 3306
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tosi-db-tale-dep
+spec:
+  replicas: 1 # 데이터베이스는 replica로 복제 불가
+  selector:
+    matchLabels:
+      app: tosi
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: tosi
+        tier: database
+    spec:
+      containers:
+        - name: tosi-db-tale
+          image: mysql:8.4
+          volumeMounts:
+            - name: mysql-config # 한글 인코딩 설정
+              mountPath: /etc/mysql/conf.d/my.cnf # 이미 존재하는 my.cnf를 내가 정의한 my.cnf로 마운트
+              subPath: my.cnf
+            - name: tale-db-config # configmap에 정의해둔 init.sql 실행
+              mountPath: /docker-entrypoint-initdb.d
+          envFrom:
+            - secretRef: # mysql 인증정보
+                name: tosi-db-scrt
+
+      volumes:
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+        - name: tale-db-config
+          configMap:
+            name: tale-db-config
