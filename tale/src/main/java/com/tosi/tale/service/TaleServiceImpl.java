@@ -145,7 +145,7 @@ public class TaleServiceImpl implements TaleService {
         headers.set("Authorization", accessToken);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         try {
-            Long userId = restTemplate.exchange(userURL + "auth",
+            Long userId = restTemplate.exchange(userURL + "/auth",
                     HttpMethod.GET, httpEntity, Long.class).getBody();
             return userId;
         } catch (Exception e) {

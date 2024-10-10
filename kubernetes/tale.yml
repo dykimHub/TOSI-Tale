@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tosi-tale-svc
+spec:
+  selector:
+    app: tosi
+    tier: backend
+  ports:
+    - port: 80 # 80으로 연결하면 http 기본 포트이기 때문에 포트 명시 필요없음
+      targetPort: 8080
+  type: LoadBalancer # 임시로 외부에 노출
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tosi-tale-dep
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tosi
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: tosi
+        tier: backend
+    spec:
+      containers:
+        - name: tosi-be-tale
+          image: dyckerkim/tosi-be-tale:latest # 재시작하면 최신 이미지 pull
+          envFrom:
+            - secretRef: # mysql, s3 인증
+                name: tosi-tale-scrt
+          env:
+            - name: MYSQL_URL
+              value: tosi-db-tale-svc.default
+            - name: REDIS_URL
+              value: tosi-cc-svc.default
+            - name: USER_URL
+              value: tosi-user-svc.default
