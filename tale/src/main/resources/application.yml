@@ -49,5 +49,5 @@ service:
   user:
     url: ${USER_URL}
 springdoc:
-  swagger-ui:
-    path: /tale/swagger-ui.html
+  server:
+    url: ${SWAGGER_SERVER_URL}
