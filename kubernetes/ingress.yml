@@ -53,10 +53,31 @@ spec:
                 name: tosi-tale-svc
                 port:
                   number: 80
-          - pathType: Prefix
-            path: "/v3/api-docs"
+          - path: /docs/tales
+            pathType: Prefix
             backend:
               service:
                 name: tosi-tale-svc
+                port:
+                  number: 80
+          - path: /docs/users
+            pathType: Prefix
+            backend:
+              service:
+                name: tosi-user-svc
+                port:
+                  number: 80
+          - path: /docs/custom-tales
+            pathType: Prefix
+            backend:
+              service:
+                name: tosi-customtale-svc
+                port:
+                  number: 80
+          - path: /docs/chat
+            pathType: Prefix
+            backend:
+              service:
+                name: tosi-chat-svc
                 port:
                   number: 80
