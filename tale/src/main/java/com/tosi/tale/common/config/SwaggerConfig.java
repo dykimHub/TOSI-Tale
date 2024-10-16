@@ -11,10 +11,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@OpenAPIDefinition(
-        servers = {
-                @Server(url = "${SWAGGER_SERVER_URL}", description = "동화 API 배포 문서")
-        })
 @Configuration
 public class SwaggerConfig {
 
