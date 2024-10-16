@@ -8,6 +8,7 @@
 - **시작일**: 2024.09.08
 
 동화 서비스를 분리하면서 전반적인 코드 재사용성과 로직을 개선하였습니다.  
+QueryDSL과 DTO Projection을 활용하여 조회 성능을 개선하였습니다.  
 쿠버네티스를 도입하여 오케스트레이션을 개선하였습니다.
 
 ## :computer: 기술 스택
@@ -31,15 +32,15 @@
 
 프로젝트의 API는 **Swagger UI**를 통해 쉽게 확인하고 테스트할 수 있습니다.
 
-- **동화 API 문서 주소**: [🔗 https://www.tosi.world/swagger-ui/index.html](https://www.tosi.world/swagger-ui/index.html)
+- **동화 API 문서 주소**: 🔗 [https://www.tosi.world/swagger-ui/index.html](https://www.tosi.world/swagger-ui/index.html)
 
-#### 🔐 인증이 필요한 메서드 사용 방법
+#### 🔐 인증이 필요한 사용 방법
 
-일부 API는 사용 전에 사용자 인증이 필요합니다. 아래의 단계를 통해 **Access Token**을 획득하셔야 합니다.
+일부 API는 사용 전에 사용자 인증이 필요합니다. 먼저 **Access Token**을 획득하셔야 합니다.
 
 1. **회원 API 문서**에 접속하여 **로그인 API**를 실행합니다:
 
-   - **회원 API 문서 주소** [🔗 https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%ED%9A%8C%EC%9B%90](https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%ED%9A%8C%EC%9B%90)
+   - **회원 API 문서 주소** 🔗 [https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%ED%9A%8C%EC%9B%90](https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%ED%9A%8C%EC%9B%90)
 
 2. 로그인 API 요청 본문에 아래 정보를 입력하세요:
    ```json
@@ -48,4 +49,5 @@
      "password": "test"
    }
    ```
-3. Authorization 칸에 `Bearer {발급받은 토큰}`을 입력하고 실행하시면 테스트할 수 있습니다.
+3. 우측 상단 Authorize 버튼을 클릭하고 발급받은 토큰을 입력한 후 Authorize 버틑을 클릭합니다.
+4. Authorization Header를 필요로 하는 API에는 `Bearer {발급받은 토큰}`을 한번 더 입력합니다.
