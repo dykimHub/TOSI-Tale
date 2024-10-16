@@ -5,10 +5,10 @@
 
 ## 📅 마이그레이션 & 리팩토링 개요
 
-- **시작일**: 2024.09.08
+- **기간**: 2024.09.09 ~
 
 동화 서비스를 분리하면서 전반적인 코드 재사용성과 로직을 개선하였습니다.  
-QueryDSL과 DTO Projection을 활용하여 조회 성능을 개선하였습니다.  
+QueryDSL 및 DTO Projection, 캐싱을 추가하여 조회 성능을 개선하였습니다.  
 쿠버네티스를 도입하여 오케스트레이션을 개선하였습니다.
 
 ## :computer: 기술 스택
@@ -21,6 +21,7 @@ QueryDSL과 DTO Projection을 활용하여 조회 성능을 개선하였습니�
 ![QueryDSL](https://img.shields.io/badge/QueryDSL-4C7ED6?style=for-the-badge&logo=spring&logoColor=white)
 
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-%23DC382D.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![AWS S3](https://img.shields.io/badge/AWS%20S3-%23FF9900.svg?style=for-the-badge&logo=amazons3&logoColor=white)
 
 ![Docker](https://img.shields.io/badge/Docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white)
