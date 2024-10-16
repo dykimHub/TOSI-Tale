@@ -45,3 +45,18 @@ spec:
                 name: tosi-chat-svc
                 port:
                   number: 80
+          # v3/api-docs는 문서 데이터, /swagger-ui는 문서 페이지라 둘다 라우팅 해야 함
+          - pathType: Prefix
+            path: "/swagger-ui"
+            backend:
+              service:
+                name: tosi-tale-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: "/v3/api-docs"
+            backend:
+              service:
+                name: tosi-tale-svc
+                port:
+                  number: 80

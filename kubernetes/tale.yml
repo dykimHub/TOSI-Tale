@@ -40,5 +40,3 @@ spec:
               value: tosi-cc-svc.default
             - name: USER_URL
               value: http://tosi-user-svc.default/api/users
-            - name: SWAGGER_SERVER_URL
-              value: http://tosi-user-svc.default/api/tales

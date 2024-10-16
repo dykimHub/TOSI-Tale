@@ -48,6 +48,3 @@ cloud:
 service:
   user:
     url: ${USER_URL}
-springdoc:
-  server:
-    url: ${SWAGGER_SERVER_URL}
