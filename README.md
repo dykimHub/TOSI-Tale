@@ -33,7 +33,7 @@ QueryDSL 및 DTO Projection, 캐싱을 추가하여 조회 성능을 개선하�
 
 동화 서비스의 API는 **Swagger UI**를 통해 쉽게 확인하고 테스트할 수 있습니다.
 
-- **동화 API 문서 주소**: 🔗 [https://www.tosi.world/swagger-ui/index.html](https://www.tosi.world/swagger-ui/index.html)
+- **동화 API 문서 주소**: 🔗 [https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%EB%8F%99%ED%99%94](https://www.tosi.world/swagger-ui/index.html?urls.primaryName=%EB%8F%99%ED%99%94)
 
 #### 🔐 사용자 인증이 필요한 API 사용 방법
 
@@ -50,5 +50,6 @@ QueryDSL 및 DTO Projection, 캐싱을 추가하여 조회 성능을 개선하�
      "password": "test"
    }
    ```
-3. 테스트할 API의 우측 좌물쇠를 클릭한 후 발급받은 토큰을 입력하고 Authorize 버튼을 클릭합니다.
-4. Try it out 버튼을 클릭하고 Authorization Header 칸에 `Bearer {발급받은 토큰}`을 한번 더 입력한 후 Execute 버튼을 클릭합니다.
+3. 발급된 Access Token을 복사합니다.
+4. 테스트할 API의 우측 좌물쇠를 클릭한 후 복사한 토큰을 붙여 넣고 Authorize 버튼을 클릭합니다.
+5. Try it out 버튼을 클릭하고 Authorization Header 칸에 `Bearer {발급받은 토큰}`을 입력한 후 Execute 버튼을 클릭합니다.
