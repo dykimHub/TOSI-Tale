@@ -50,11 +50,11 @@ service:
     url: ${USER_URL}
 springdoc:
   api-docs:
-    path: /docs/tales/v3/api-docs
+    path: /docs/tales
   swagger-ui:
     urls:
       - name: 동화
-        url: https://www.tosi.world/docs/tales/v3/api-docs
+        url: https://www.tosi.world/docs/tales
       - name: 회원
         url: https://www.tosi.world/docs/users/v3/api-docs
       - name: 커스텀 동화
