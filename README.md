@@ -1,7 +1,7 @@
 # :rabbit: TOSI-Tale
 
 **TOSI 서비스**에서 동화와 관련된 기능을 **동화 서비스**로 분리한 프로젝트 입니다.  
-[TOSI 프로젝트](https://github.com/dykimHub/TOSI)에서 전체 구조를 확인하실 수 있습니다.
+[TOSI(The Only Story In the World, 토씨) 프로젝트](https://github.com/dykimHub/TOSI)에서 전체 구조를 확인하실 수 있습니다.
 
 ## 📅 마이그레이션 & 리팩토링 개요
 
@@ -50,5 +50,5 @@ QueryDSL 및 DTO Projection, 캐싱을 추가하여 조회 성능을 개선하�
      "password": "test"
    }
    ```
-3. 우측 상단 Authorize 버튼을 클릭하고 발급받은 토큰을 입력한 후 Authorize 버틑을 클릭합니다.
+3. 우측 상단 Authorize 버튼을 클릭하고 발급받은 토큰을 입력한 후 Authorize 버튼을 클릭합니다.
 4. Authorization Header를 필요로 하는 API에는 `Bearer {발급받은 토큰}`을 한번 더 입력합니다.
