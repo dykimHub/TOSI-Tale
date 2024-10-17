@@ -56,8 +56,8 @@ springdoc:
       - name: 동화
         url: https://www.tosi.world/docs/tales
       - name: 회원
-        url: https://www.tosi.world/docs/users/v3/api-docs
+        url: https://www.tosi.world/docs/users
       - name: 커스텀 동화
-        url: https://www.tosi.world/docs/custom-tales/v3/api-docs
+        url: https://www.tosi.world/docs/custom-tales
       - name: 채팅
-        url: https://www.tosi.world/docs/chat/v3/api-docs
+        url: https://www.tosi.world/docs/chat
