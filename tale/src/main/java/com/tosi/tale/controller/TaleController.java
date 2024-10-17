@@ -71,7 +71,7 @@ public class TaleController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(
                     examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                            value = ExampleObject.taleDetailExample
+                            value = ExampleObject.taleDetail
                     )
             )
     )
