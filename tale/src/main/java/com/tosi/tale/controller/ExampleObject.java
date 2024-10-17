@@ -1,7 +1,7 @@
 package com.tosi.tale.controller;
 
 public class ExampleObject {
-    public static final String taleDetailExample = """
+    public static final String taleDetail = """
             {
                 "taleDetailDto": {
                     "taleId": 6,
