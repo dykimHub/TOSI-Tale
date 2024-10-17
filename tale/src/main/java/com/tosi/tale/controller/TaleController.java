@@ -30,19 +30,18 @@ public class TaleController {
     @GetMapping
     public ResponseEntity<TaleDto.TaleDtos> findTaleList(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "regDate") String sort,
             @RequestParam(defaultValue = "desc") String dir
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(dir), sort));
+        Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.fromString(dir), sort));
         TaleDto.TaleDtos taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
                 .body(taleDtoList);
     }
 
-    @Operation(summary = "동화 정보 조회")
+    @Operation(summary = "동화 개요 조회")
     @GetMapping("/{taleId}")
-    public ResponseEntity<TaleDto> findTaleList(@PathVariable Long taleId) {
+    public ResponseEntity<TaleDto> findTaleList(@Parameter(example = "6") @PathVariable Long taleId) {
         TaleDto taleDto = taleService.findTale(taleId);
         return ResponseEntity.ok()
                 .body(taleDto);
@@ -50,7 +49,7 @@ public class TaleController {
 
     @Operation(summary = "동화 내용 조회")
     @GetMapping("/content/{taleId}")
-    public ResponseEntity<TaleDetailDto> findTaleDetail(@PathVariable Long taleId) {
+    public ResponseEntity<TaleDetailDto> findTaleDetail(@Parameter(example = "6") @PathVariable Long taleId) {
         TaleDetailDto taleDetailDto = taleService.findTaleDetail(taleId);
         return ResponseEntity.ok()
                 .body(taleDetailDto);
@@ -59,13 +58,10 @@ public class TaleController {
     @Operation(summary = "동화 제목으로 검색")
     @GetMapping("/search")
     public ResponseEntity<List<TaleDto>> findTaleByTitle(
-            @Parameter(example = "여우")
-            @RequestParam String titlePart,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
-            @RequestParam(defaultValue = "title") String sort
+            @Parameter(example = "여우") @RequestParam String titlePart,
+            @RequestParam(defaultValue = "0") int page
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        Pageable pageable = PageRequest.of(page, 9, Sort.by("title"));
         List<TaleDto> taleDtoList = taleService.findTaleByTitle(titlePart, pageable);
         return ResponseEntity.ok()
                 .body(taleDtoList);
