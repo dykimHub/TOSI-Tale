@@ -57,7 +57,7 @@ jobs:
 
       - name: Check deployment status
         run: |
-          sleep 120
+          sleep 60
           kubectl rollout status deployment/tosi-tale-dep --timeout=60s
 
       # 이전 단계 실패했으면 이전 버전으로 롤백
