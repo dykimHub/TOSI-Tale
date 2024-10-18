@@ -3,7 +3,7 @@ name: TALE CD
 # release로 시작하는 브랜치에 push될 때
 on:
   push:
-    branches: ["release-*"]
+    branches: ["feature/deploy/tale*"]
 
 # 깃헙 토큰 권한 생성
 permissions:
@@ -61,7 +61,9 @@ jobs:
           sleep 120
           kubectl rollout status deployment/tosi-tale-dep --timeout=20s
 
-      # 배포 실패 시 이전 버전의 이미지로 롤백
+      # 배포 실패 시 이전 버전의 이미지로 롤백하고 현재 버전 이미지 삭제
       - name: Rollback
         if: failure()
-        run: kubectl rollout undo deployment/tosi-tale-dep
+        run: |
+          kubectl rollout undo deployment/tosi-tale-dep
+          docker rmi ${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }}
