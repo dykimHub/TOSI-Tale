@@ -1,5 +1,6 @@
 name: TALE CD
 
+# 테스트 브랜치로 잠시 변경
 # release로 시작하는 브랜치에 push될 때
 on:
   push:
