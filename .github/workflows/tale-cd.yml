@@ -3,7 +3,7 @@ name: TALE CD
 # release로 시작하는 브랜치에 push될 때
 on:
   push:
-    branches: ["feature/be/tale"]
+    branches: ["feature/deploy/tale"]
 
 # 깃헙 토큰 권한 생성
 permissions:
