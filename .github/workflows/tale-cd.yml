@@ -55,8 +55,10 @@ jobs:
       - name: Deploy
         run: kubectl set image deployment/tosi-tale-dep tosi-be-tale=${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }}
 
-      - name: Wait for Pods to be ready
-        run: kubectl wait --for=condition=ready pod -l app=tosi-tale,tier=backend --timeout=100s
+      - name: Check deployment status
+        run: |
+          sleep 20
+          kubectl rollout status deployment/tosi-tale-dep --timeout=60s
 
       # 이전 단계 실패했으면 이전 버전으로 롤백
       - name: Rollback
