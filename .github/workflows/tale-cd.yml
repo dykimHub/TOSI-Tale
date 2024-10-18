@@ -36,7 +36,6 @@ jobs:
         run: |
           cd tale
           docker buildx build -t ${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }} --push .
-          docker buildx build -t ${{ secrets.DOCKER_REPO }}/tosi-be-tale:latest --push .
 
       # aws 인증
       # aws에 github actions용 role 생성 후 eks access에 추가
@@ -61,9 +60,7 @@ jobs:
           sleep 120
           kubectl rollout status deployment/tosi-tale-dep --timeout=20s
 
-      # 배포 실패 시 이전 버전의 이미지로 롤백하고 현재 버전 이미지 삭제
+      # 배포 실패 시 이전 버전의 이미지로 롤백
       - name: Rollback
         if: failure()
-        run: |
-          kubectl rollout undo deployment/tosi-tale-dep
-          docker rmi ${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }}
+        run: kubectl rollout undo deployment/tosi-tale-dep
