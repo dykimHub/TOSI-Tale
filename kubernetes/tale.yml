@@ -30,6 +30,12 @@ spec:
       containers:
         - name: tosi-be-tale
           image: dyckerkim/tosi-be-tale:latest # 재시작하면 최신 이미지 pull
+          readinessProbe: # 컨테이너 준비 상태 확인
+            initialDelaySeconds: 10
+            httpGet:
+              path: /api/tales/1
+              port: 8080
+            failureThreshold: 2
           envFrom:
             - secretRef: # mysql, s3 인증
                 name: tosi-tale-scrt
