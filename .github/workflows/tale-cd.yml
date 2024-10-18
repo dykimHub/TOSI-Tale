@@ -22,7 +22,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 도커 허브 로그인
+      # Docker Hub 로그인
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -36,7 +36,6 @@ jobs:
         run: |
           cd tale
           docker buildx build -t ${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }} --push .
-          docker buildx build -t ${{ secrets.DOCKER_REPO }}/tosi-be-tale:latest --push .
 
       # aws 인증
       # aws에 github actions용 role 생성 후 eks access에 추가
@@ -50,6 +49,18 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --region ap-northeast-2 --name TOSI
 
-      # tale pod을 재시작하여 최신 이미지 pull
+      # pod 이미지를 현재 버전으로 바꿈
+      # kubectl rollout restart를 사용하면 latest 태그 이미지를 사용할 수 있지만, 이전 버전을 특정할 수 없어서 롤백할 때 문제가 있음
       - name: Deploy
-        run: kubectl rollout restart deployment/tosi-tale-dep
+        run: kubectl set image deployment/tosi-tale-dep tosi-be-tale=${{ secrets.DOCKER_REPO }}/tosi-be-tale:${{ github.sha }}
+
+      # 2분 대기 후 20초 동안 배포 상태 체크 (성공 시 successfully rolled out 메시지)
+      - name: Check deployment status
+        run: |
+          sleep 120
+          kubectl rollout status deployment/tosi-tale-dep --timeout=20s
+
+      # 배포 실패 시 이전 버전의 이미지로 롤백
+      - name: Rollback
+        if: failure()
+        run: kubectl rollout undo deployment/tosi-tale-dep
