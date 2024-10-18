@@ -29,13 +29,13 @@ spec:
     spec:
       containers:
         - name: tosi-be-tale
-          image: dyckerkim/tosi-be-tale:latest # 재시작하면 최신 이미지 pull
-          livenessProbe: # 컨테이너 준비 상태 확인
-            httpGet:
-              path: /api/tales/1
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 10
+          image: dyckerkim/tosi-be-tale:latest
+          # livenessProbe: # 헬스 체크
+          #   httpGet:
+          #     path: /api/tales/1 # 해당 경로로 HTTP 요청을 보내 상태 확인
+          #     port: 8080
+          #   initialDelaySeconds: 15 # 컨테이너 시작 후 15초 뒤에 처음으로 헬스 체크 요청
+          #   periodSeconds: 10 # 이후 매 10초마다 헬스 체크 요청을 보냄
           envFrom:
             - secretRef: # mysql, s3 인증
                 name: tosi-tale-scrt
