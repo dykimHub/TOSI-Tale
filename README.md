@@ -11,6 +11,12 @@
 QueryDSL 및 DTO Projection, 캐싱을 추가하여 조회 성능을 개선하였습니다.  
 쿠버네티스를 도입하여 오케스트레이션을 개선하였습니다.
 
+## :pushpin: 서비스 아키텍처
+
+<img src="./assets/tosi_msa_sa.drawio.png" alt="System Architecture" width="700"/>
+
+Pod 배치는 예시 입니다. 각 Pod은 리소스 사용량에 따라 자동으로 적절한 노드에 배치됩니다.
+
 ## :computer: 기술 스택
 
 ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ%20IDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
