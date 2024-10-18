@@ -3,7 +3,7 @@ name: TALE CD
 # release로 시작하는 브랜치에 push될 때
 on:
   push:
-    branches: ["release-*"]
+    branches: ["feature/be/tale"]
 
 # 깃헙 토큰 권한 생성
 permissions:
@@ -53,3 +53,12 @@ jobs:
       # tale pod을 재시작하여 최신 이미지 pull
       - name: Deploy
         run: kubectl rollout restart deployment/tosi-tale-dep
+
+      # 60초 동안 pod 상태 확인
+      - name: Check deployment status
+        run: kubectl rollout status deployment/tosi-tale-dep --timeout=60s
+
+      # 이전 단계 실패했으면 이전 버전으로 롤백
+      - name: Rollback
+        if: failure()
+        run: kubectl rollout undo deployment/tosi-tale-dep
