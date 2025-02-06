@@ -1,5 +1,6 @@
 package com.tosi.tale.controller;
 
+import com.tosi.common.cache.TaleCacheDto;
 import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.dto.TalePageRequestDto;
@@ -41,10 +42,10 @@ public class TaleController {
 
     @Operation(summary = "동화 개요 조회")
     @GetMapping("/{taleId}")
-    public ResponseEntity<TaleDto> findTaleList(@Parameter(example = "6") @PathVariable Long taleId) {
-        TaleDto taleDto = taleService.findTale(taleId);
+    public ResponseEntity<TaleCacheDto> findTaleList(@Parameter(example = "6") @PathVariable Long taleId) {
+        TaleCacheDto taleCacheDto = taleService.findTale(taleId);
         return ResponseEntity.ok()
-                .body(taleDto);
+                .body(taleCacheDto);
     }
 
     @Operation(summary = "동화 내용 조회")

@@ -1,6 +1,7 @@
 package com.tosi.tale.service;
 
 
+import com.tosi.common.cache.TaleCacheDto;
 import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.dto.TalePageRequestDto;
@@ -13,7 +14,7 @@ public interface TaleService {
 
     TaleDto.TaleDtos findTaleList(Pageable pageable);
 
-    TaleDto findTale(Long taleId);
+    TaleCacheDto findTale(Long taleId);
 
     TaleDetailDto findTaleDetail(Long taleId);
 

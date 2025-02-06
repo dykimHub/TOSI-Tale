@@ -1,13 +1,18 @@
 package com.tosi.tale.service;
 
-import com.tosi.tale.common.exception.CustomException;
-import com.tosi.tale.common.exception.ExceptionCode;
+import com.tosi.common.cache.CacheKey;
+import com.tosi.common.cache.TaleCacheDto;
+import com.tosi.common.exception.CustomException;
 import com.tosi.tale.dto.*;
+import com.tosi.tale.exception.ExceptionCode;
 import com.tosi.tale.repository.TaleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,10 +26,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TaleServiceImpl implements TaleService {
+
     private final TaleRepository taleRepository;
     private final S3Service s3Service;
     private final JosaService josaService;
     private final RestTemplate restTemplate;
+    /**
+     * RedisTemplate 타입 Bean이 여러 개라서 Bean 이름 지정
+     */
+    @Qualifier("taleRedisTemplate")
+    private final RedisTemplate<String, TaleCacheDto> taleRedisTemplate;
     @Value("${service.user.url}")
     private String userURL;
 
@@ -53,18 +64,34 @@ public class TaleServiceImpl implements TaleService {
 
     /**
      * 동화 제목, 동화 표지, TTS 구연 시간 등을 포함한 동화 정보를 반환합니다.
-     * 동화 개요와 관련된 정보(#동화번호)를 캐시에 등록합니다.
+     * 캐시가 존재하면 캐시를 반환하고 없다면 TaleCacheDto 객체를 캐시에 등록하고 반환합니다.
      *
      * @param taleId Tale 객체 id
-     * @return S3 Key로 생성한 S3 URL을 포함한 TaleDTO 객체 반환
+     * @return S3 URL을 포함한 TaleCacheDTO 객체 반환
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
-    @Cacheable(value = "taleCache", key = "#taleId")
     @Override
-    public TaleDto findTale(Long taleId) {
-        TaleDto taleDto = taleRepository.findTale(taleId)
+    public TaleCacheDto findTale(Long taleId) {
+        String cacheKey = CacheKey.TALE.getKey(taleId);
+
+        /**
+         * ValueOperations는 Redis에서 Key-Value 데이터를 관리하는 인터페이스 입니다.
+         */
+        ValueOperations<String, TaleCacheDto> ops = taleRedisTemplate.opsForValue();
+
+        TaleCacheDto taleCacheDto = ops.get(cacheKey);
+        if (taleCacheDto != null)
+            return taleCacheDto;
+
+        TaleCacheDto newTaleCacheDto = taleRepository.findTale(taleId)
+                .map(t -> t.withThumbnailS3URL(s3Service.findS3URL(t.getThumbnailS3Key())))
+                .map(TaleDto::toTaleCacheDto)
                 .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
-        return taleDto.withThumbnailS3URL(s3Service.findS3URL(taleDto.getThumbnailS3Key()));
+
+        ops.set(cacheKey, newTaleCacheDto);
+
+        return newTaleCacheDto;
+
     }
 
     /**

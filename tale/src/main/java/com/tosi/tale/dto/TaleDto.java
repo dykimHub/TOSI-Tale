@@ -1,6 +1,7 @@
 package com.tosi.tale.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import com.tosi.common.cache.TaleCacheDto;
 import lombok.*;
 
 import java.util.List;
@@ -17,9 +18,6 @@ public class TaleDto {
     private String thumbnailS3URL;
     private int ttsLength;
 
-    /*
-     * 서비스 레이어에서 thumbnailS3URL을 추가한 후 사용하는 생성자
-     */
     @Builder
     public TaleDto(long taleId, String title, String thumbnailS3Key, String thumbnailS3URL, int ttsLength) {
         this.taleId = taleId;
@@ -52,6 +50,20 @@ public class TaleDto {
         public TaleDtos(List<TaleDto> taleDtos) {
             this.taleDtos = taleDtos;
         }
+    }
+
+    /**
+     * TaleDto를 TaleCacheDto로 변환하여 반환합니다.
+     *
+     * @return 변환된 TaleCacheDto 객체
+     */
+    public TaleCacheDto toTaleCacheDto(){
+        return TaleCacheDto.builder()
+                .taleId(this.getTaleId())
+                .title(this.getTitle())
+                .thumbnailS3URL(this.getThumbnailS3URL())
+                .ttsLength(this.getTtsLength())
+                .build();
     }
 }
 

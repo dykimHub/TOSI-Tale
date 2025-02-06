@@ -1,5 +1,6 @@
 package com.tosi.common.config;
 
+import com.tosi.common.cache.TaleCacheDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -60,6 +61,36 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        /**
+         * JSON 직렬화를 사용하는 Redis Serializer
+         */
+        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
+
+        /**
+         * Key Serializer (문자열로 직렬화)
+         */
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        /**
+         * Value Serializer (JSON 형식으로 직렬화)
+         */
+        template.setValueSerializer(jsonSerializer);
+        template.setHashValueSerializer(jsonSerializer);
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    /**
+     * RedisTemplate Bean을 생성하여 Redis와의 데이터 입출력을 지원합니다.
+     * TaleCacheDto 전용 RedisTemplate를 만들어서 안정적으로 직렬화합니다.
+     */
+    @Bean
+    public RedisTemplate<String, TaleCacheDto> taleRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, TaleCacheDto> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
         /**
