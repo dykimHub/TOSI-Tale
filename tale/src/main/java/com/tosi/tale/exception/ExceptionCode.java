@@ -1,4 +1,4 @@
-package com.tosi.tale.common.exception;
+package com.tosi.tale.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

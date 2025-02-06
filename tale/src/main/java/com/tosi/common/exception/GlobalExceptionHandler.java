@@ -1,4 +1,4 @@
-package com.tosi.tale.common.exception;
+package com.tosi.common.exception;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ce) {
         ErrorResponse errorResponse = ErrorResponse.of(ce.getExceptionCode());
-        log.info(errorResponse.toString());
+        //log.info(ce.getMessage());
         return ResponseEntity.status(errorResponse.getStatus())
                 .body(errorResponse);
 
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        log.info(errorResponse.toString());
+        //log.info(e.getMessage());
         return ResponseEntity.status(errorResponse.getStatus())
                 .body(errorResponse);
 

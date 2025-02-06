@@ -1,8 +1,7 @@
-package com.tosi.tale.common.config;
-
-import org.springframework.context.annotation.Configuration;
+package com.tosi.common.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration

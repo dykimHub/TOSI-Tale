@@ -1,5 +1,6 @@
-package com.tosi.tale.common.exception;
+package com.tosi.common.exception;
 
+import com.tosi.tale.exception.ExceptionCode;
 import lombok.Getter;
 
 @Getter
