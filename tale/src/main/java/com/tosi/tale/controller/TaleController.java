@@ -44,9 +44,12 @@ public class TaleController {
     @GetMapping("/{taleId}")
     public ResponseEntity<TaleCacheDto> findTaleList(@Parameter(example = "6") @PathVariable Long taleId) {
         TaleCacheDto taleCacheDto = taleService.findTale(taleId);
+
         return ResponseEntity.ok()
                 .body(taleCacheDto);
     }
+
+    public ResponseEntity<List<TaleCacheDto>> 
 
     @Operation(summary = "동화 내용 조회")
     @GetMapping("/content/{taleId}")

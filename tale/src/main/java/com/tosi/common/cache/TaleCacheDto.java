@@ -20,6 +20,17 @@ public class TaleCacheDto {
     private String thumbnailS3URL;
     private int ttsLength;
 
+    /**
+     * TaleDto에서 S3 Key 변수를 제외해서 Redis에 저장될 객체 크기를 줄임
+     */
+    @Builder
+    public TaleCacheDto(long taleId, String title, String thumbnailS3URL, int ttsLength) {
+        this.taleId = taleId;
+        this.title = title;
+        this.thumbnailS3URL = thumbnailS3URL;
+        this.ttsLength = ttsLength;
+    }
+
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class TaleDtos {
@@ -28,14 +39,6 @@ public class TaleCacheDto {
         public TaleDtos(List<TaleCacheDto> taleCacheDtos) {
             this.taleCacheDtos = taleCacheDtos;
         }
-    }
-
-    @Builder
-    public TaleCacheDto(long taleId, String title, String thumbnailS3URL, int ttsLength) {
-        this.taleId = taleId;
-        this.title = title;
-        this.thumbnailS3URL = thumbnailS3URL;
-        this.ttsLength = ttsLength;
     }
 }
 
