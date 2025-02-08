@@ -42,14 +42,20 @@ public class TaleController {
 
     @Operation(summary = "동화 개요 조회")
     @GetMapping("/{taleId}")
-    public ResponseEntity<TaleCacheDto> findTaleList(@Parameter(example = "6") @PathVariable Long taleId) {
+    public ResponseEntity<TaleCacheDto> findTale(@Parameter(example = "6") @PathVariable Long taleId) {
         TaleCacheDto taleCacheDto = taleService.findTale(taleId);
-
         return ResponseEntity.ok()
                 .body(taleCacheDto);
     }
 
-    public ResponseEntity<List<TaleCacheDto>> 
+    @Operation(summary = "동화 개요 여러 개 조회")
+    @GetMapping("/bulk")
+    public ResponseEntity<List<TaleCacheDto>> findMultiTales(@RequestParam List<Long> taleIds) {
+        List<TaleCacheDto> taleCacheDtos = taleService.findMultiTales(taleIds);
+        return ResponseEntity.ok()
+                .body(taleCacheDtos);
+
+    }
 
     @Operation(summary = "동화 내용 조회")
     @GetMapping("/content/{taleId}")

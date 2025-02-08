@@ -9,9 +9,11 @@ import java.util.Optional;
 
 public interface TaleRepositoryCustom {
 
-    Optional<List<TaleDto>> findTaleList(Pageable pageable);
+    List<TaleDto> findTaleList(Pageable pageable);
 
     Optional<TaleDto> findTale(Long taleId);
+
+    List<TaleDto> findMultiTales(List<Long> cacheMissedIds);
 
     Optional<TaleDetailS3Dto> findTaleDetail(Long taleId);
 

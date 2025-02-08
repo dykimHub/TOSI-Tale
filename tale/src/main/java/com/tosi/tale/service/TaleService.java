@@ -16,6 +16,8 @@ public interface TaleService {
 
     TaleCacheDto findTale(Long taleId);
 
+    List<TaleCacheDto> findMultiTales(List<Long> taleIds);
+
     TaleDetailDto findTaleDetail(Long taleId);
 
     List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
@@ -23,4 +25,5 @@ public interface TaleService {
     List<TalePageResponseDto> createTalePages(TalePageRequestDto talePageRequestDto);
 
     Long findUserAuthorization(String accessToken);
+
 }

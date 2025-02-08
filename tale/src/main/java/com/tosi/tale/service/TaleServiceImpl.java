@@ -17,10 +17,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +44,10 @@ public class TaleServiceImpl implements TaleService {
     @Cacheable(value = "taleListCache", key = "#pageable.pageNumber")
     @Override
     public TaleDto.TaleDtos findTaleList(Pageable pageable) {
-        List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable)
-                .orElseThrow(() -> new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND));
+        List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable);
+
+        if (taleDtoList.isEmpty())
+            throw new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND);
 
         return new TaleDto.TaleDtos(
                 taleDtoList.stream()
@@ -62,13 +63,13 @@ public class TaleServiceImpl implements TaleService {
      * 캐시가 존재하면 캐시를 반환하고 없다면 DB에서 TaleDto 객체를 조회하여 캐시에 등록하고 반환합니다.
      *
      * @param taleId Tale 객체 id
-     * @return S3 URL을 포함한 TaleCacheDTO 객체 반환
+     * @return TaleCacheDTO 객체
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
     @Override
     public TaleCacheDto findTale(Long taleId) {
         String cacheKey = CacheKey.TALE.getKey(taleId);
-        TaleCacheDto taleCacheDto = cacheService.getCachedDto(cacheKey, TaleCacheDto.class);
+        TaleCacheDto taleCacheDto = cacheService.getCache(cacheKey, TaleCacheDto.class);
 
         if (taleCacheDto != null)
             return taleCacheDto;
@@ -79,10 +80,76 @@ public class TaleServiceImpl implements TaleService {
         String thumbnailS3URL = s3Service.findS3URL(taleDto.getThumbnailS3Key());
         TaleCacheDto newTaleCacheDto = taleDto.withThumbnailS3URL(thumbnailS3URL).toTaleCacheDto();
 
-        cacheService.setCachedDto(cacheKey, newTaleCacheDto, 6, TimeUnit.HOURS);
+        cacheService.setCache(cacheKey, newTaleCacheDto, 6, TimeUnit.HOURS);
 
         return newTaleCacheDto;
 
+    }
+
+    /**
+     * 주어진 동화 ID 리스트에 대해 캐시에서 동화 정보를 조회합니다.
+     * 캐시에 없는 동화는 DB에서 조회한 후 S3 URL을 세팅하고 캐시를 업데이트합니다.
+     *
+     * @param taleIds Tale 객체 id 목록
+     * @return TaleCacheDTO 객체 리스트
+     */
+    @Override
+    public List<TaleCacheDto> findMultiTales(List<Long> taleIds) {
+        // 동화 ID 리스트를 캐시 키 리스트로 변환합니다.
+        List<String> cacheKeys = taleIds.stream()
+                .map(CacheKey.TALE::getKey)
+                .toList();
+
+        // Redis에서 캐시 키로 동화 캐시를 조회합니다.
+        List<TaleCacheDto> taleCacheDtos = new ArrayList<>(cacheService.getMultiCaches(cacheKeys, TaleCacheDto.class));
+
+        // 맵에 캐시에서 조회되지 않은(=null) 동화 ID와 인덱스(순서 유지용)를 저장합니다.
+        // key: 동화 ID, value: taleCacheDtos 리스트 내 인덱스
+        Map<Long, Integer> missingTaleIndexMap = new HashMap<>();
+
+        for (int i = 0; i < taleCacheDtos.size(); i++) {
+            if (taleCacheDtos.get(i) == null) {
+                missingTaleIndexMap.put(taleIds.get(i), i);
+            }
+        }
+
+        // 캐시 미스가 없다면, 그대로 캐시된 결과를 반환합니다.
+        if (missingTaleIndexMap.isEmpty())
+            return taleCacheDtos;
+
+        // 캐시에 없는 동화 ID 리스트 대해 DB에서 동화 정보를 조회합니다.
+        List<TaleDto> taleDtos = taleRepository.findMultiTales(new ArrayList<>(missingTaleIndexMap.keySet()));
+
+        // DB에서 조회한 동화 정보를 동화 ID를 key로 하는 맵으로 생성합니다.
+        // S3에서 썸네일 URL을 세팅하고, TaleCacheDto로 형변환 합니다.
+        Map<Long, TaleCacheDto> taleDtoMap = taleDtos.stream()
+                .collect(Collectors.toMap(
+                        TaleDto::getTaleId, // key
+                        t -> t.withThumbnailS3URL(s3Service.findS3URL(t.getThumbnailS3Key())).toTaleCacheDto()) // value
+                );
+
+        // DB에서 조회한 동화 정보를 taleCacheDtos 리스트에 채웁니다.
+        // 캐시 업데이트용 Map에 담습니다.
+        Map<String, Object> newTaleCacheDtoMap = new HashMap<>();
+
+        for (Map.Entry<Long, Integer> entry : missingTaleIndexMap.entrySet()) {
+            long missingTaleId = entry.getKey();
+            int missingIndex = entry.getValue();
+
+            TaleCacheDto taleCacheDto = taleDtoMap.get(missingTaleId);
+            if (taleCacheDto == null)
+                throw new CustomException(ExceptionCode.TALE_NOT_FOUND);
+
+            taleCacheDtos.set(missingIndex, taleCacheDto);
+            newTaleCacheDtoMap.put(CacheKey.TALE.getKey(missingTaleId), taleCacheDto);
+
+        }
+
+        // 동화 캐시를 일괄 업데이트합니다.
+        cacheService.setMultiCaches(newTaleCacheDtoMap, 6, TimeUnit.HOURS);
+
+        // 캐시에 있던 동화 객체와 DB에 있던 동화 객체가 합쳐져 최종적으로 반환됩니다.
+        return taleCacheDtos;
     }
 
     /**
