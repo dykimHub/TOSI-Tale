@@ -3,6 +3,7 @@ package com.tosi.tale.service;
 import com.tosi.common.cache.CachePrefix;
 import com.tosi.common.cache.CacheService;
 import com.tosi.common.cache.TaleCacheDto;
+import com.tosi.common.cache.TaleDetailCacheDto;
 import com.tosi.common.exception.CustomException;
 import com.tosi.tale.dto.*;
 import com.tosi.tale.exception.ExceptionCode;
@@ -160,9 +161,13 @@ public class TaleServiceImpl implements TaleService {
      * @return TaleDetailDto 객체
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
-    @Cacheable(value = "taleDetailCache", key = "#taleId")
     @Override
     public TaleDetailDto findTaleDetail(Long taleId) {
+        TaleDetailCacheDto taleDetailCacheDto = cacheService.getCache(CachePrefix.TALE_DETAIL.buildCacheKey(taleId), TaleDetailCacheDto.class);
+        if (taleDetailCacheDto != null) {
+            return TaleDetailDto.of(taleDetailCacheDto.getTaleId(), taleDetailCacheDto.getTitle(), taleDetailCacheDto.getContent(), taleDetailCacheDto.getCharacters(), taleDetailCacheDto.getImages());
+        }
+
         TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTaleDetail(taleId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
 
@@ -170,13 +175,7 @@ public class TaleServiceImpl implements TaleService {
         String[] characters = s3Service.findCharacters(taleDetailS3Dto.getContentS3Key());
         List<String> images = s3Service.findImages(taleDetailS3Dto.getImageS3KeyPrefix());
 
-        return TaleDetailDto.builder()
-                .taleId(taleDetailS3Dto.getTaleId())
-                .title(taleDetailS3Dto.getTitle())
-                .content(content)
-                .characters(characters)
-                .images(images)
-                .build();
+        return TaleDetailDto.of(taleDetailS3Dto.getTaleId(), taleDetailS3Dto.getTitle(), content, characters, images);
     }
 
     /**
@@ -218,28 +217,6 @@ public class TaleServiceImpl implements TaleService {
 
         return talePageResponseDtoList;
     }
-
-    /**
-     * 회원 서비스로 토큰을 보내고 인증이 완료되면 회원 번호를 반환합니다.
-     *
-     * @param accessToken 로그인한 회원의 토큰
-     * @return 회원 번호
-     * @throws CustomException 인증에 성공하지 못하면 예외 처리
-     */
-    @Override
-    public Long findUserAuthorization(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", accessToken);
-        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        try {
-            Long userId = restTemplate.exchange(userURL + "/auth",
-                    HttpMethod.GET, httpEntity, Long.class).getBody();
-            return userId;
-        } catch (Exception e) {
-            throw new CustomException(ExceptionCode.INVALID_TOKEN);
-        }
-    }
-
 
     /**
      * 동화 등장인물 이름을 사용자가 지정한 이름으로 교체합니다.
@@ -306,5 +283,27 @@ public class TaleServiceImpl implements TaleService {
 
         return talePageResponseDtoList;
     }
+
+    /**
+     * 회원 서비스로 토큰을 보내고 인증이 완료되면 회원 번호를 반환합니다.
+     *
+     * @param accessToken 로그인한 회원의 토큰
+     * @return 회원 번호
+     * @throws CustomException 인증에 성공하지 못하면 예외 처리
+     */
+    @Override
+    public Long findUserAuthorization(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", accessToken);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        try {
+            Long userId = restTemplate.exchange(userURL + "/auth",
+                    HttpMethod.GET, httpEntity, Long.class).getBody();
+            return userId;
+        } catch (Exception e) {
+            throw new CustomException(ExceptionCode.INVALID_TOKEN);
+        }
+    }
+
 
 }

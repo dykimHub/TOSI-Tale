@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum CachePrefix {
     TALE("taleCache::"),
     POPULAR_TALE("popularTaleCache::"),
-    FAVORITE_TALE("favoriteTaleCache::");
+    FAVORITE_TALE("favoriteTaleCache::"),
+    TALE_DETAIL("taleDetailCache::");
 
     private final String prefix;
 
