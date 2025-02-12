@@ -1,6 +1,5 @@
 package com.tosi.common.config;
 
-import com.tosi.common.cache.TaleCacheDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;

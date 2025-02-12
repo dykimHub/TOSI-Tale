@@ -1,6 +1,6 @@
 package com.tosi.tale.service;
 
-import com.tosi.common.cache.CacheKey;
+import com.tosi.common.cache.CachePrefix;
 import com.tosi.common.cache.CacheService;
 import com.tosi.common.cache.TaleCacheDto;
 import com.tosi.common.exception.CustomException;
@@ -68,7 +68,7 @@ public class TaleServiceImpl implements TaleService {
      */
     @Override
     public TaleCacheDto findTale(Long taleId) {
-        String cacheKey = CacheKey.TALE.getKey(taleId);
+        String cacheKey = CachePrefix.TALE.buildCacheKey(taleId);
         TaleCacheDto taleCacheDto = cacheService.getCache(cacheKey, TaleCacheDto.class);
 
         if (taleCacheDto != null)
@@ -97,10 +97,10 @@ public class TaleServiceImpl implements TaleService {
     public List<TaleCacheDto> findMultiTales(List<Long> taleIds) {
         // 동화 ID 리스트를 캐시 키 리스트로 변환합니다.
         List<String> cacheKeys = taleIds.stream()
-                .map(CacheKey.TALE::getKey)
+                .map(CachePrefix.TALE::buildCacheKey)
                 .toList();
 
-        // Redis에서 캐시 키로 동화 캐시를 조회합니다.
+        // Redis에서 캐시 키로 동화 캐시를 조회하고 가변 리스트로 만듭니다.
         List<TaleCacheDto> taleCacheDtos = new ArrayList<>(cacheService.getMultiCaches(cacheKeys, TaleCacheDto.class));
 
         // 맵에 캐시에서 조회되지 않은(=null) 동화 ID와 인덱스(순서 유지용)를 저장합니다.
@@ -141,7 +141,7 @@ public class TaleServiceImpl implements TaleService {
                 throw new CustomException(ExceptionCode.TALE_NOT_FOUND);
 
             taleCacheDtos.set(missingIndex, taleCacheDto);
-            newTaleCacheDtoMap.put(CacheKey.TALE.getKey(missingTaleId), taleCacheDto);
+            newTaleCacheDtoMap.put(CachePrefix.TALE.buildCacheKey(missingTaleId), taleCacheDto);
 
         }
 

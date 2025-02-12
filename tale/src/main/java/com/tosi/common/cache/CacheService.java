@@ -78,4 +78,13 @@ public class CacheService {
         }
     }
 
+    /**
+     * 지정된 키에 해당하는 객체를 Redis 캐시에서 삭제합니다.
+     *
+     * @param key 캐시에 저장된 키
+     */
+    public void deleteCache(String key) {
+        redisTemplate.delete(key);
+    }
+
 }
