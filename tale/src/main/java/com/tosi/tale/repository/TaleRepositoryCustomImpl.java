@@ -69,13 +69,14 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
     }
 
     /**
-     * 해당 Tale id 목록을 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
+     * 해당 id 목록의 Tale 엔티티를 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
+     * TaleDto 객체로 변환하여 반환합니다.
      *
-     * @param cacheMissedIds Tale 객체 id 리스트
+     * @param taleIds Tale 객체 id 리스트
      * @return TaleDto 객체 리스트
      */
     @Override
-    public List<TaleDto> findMultiTales(List<Long> cacheMissedIds) {
+    public List<TaleDto> findMultiTales(List<Long> taleIds) {
         QTale qTale = QTale.tale;
         return queryFactory.select(new QTaleDto(
                         qTale.taleId,
@@ -83,7 +84,7 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
                         qTale.thumbnailS3Key,
                         qTale.ttsLength))
                 .from(qTale)
-                .where(qTale.taleId.in(cacheMissedIds))
+                .where(qTale.taleId.in(taleIds))
                 .fetch();
 
     }
@@ -106,6 +107,26 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
                 .where(qTale.taleId.eq(taleId))
                 .fetchOne()
         );
+    }
+
+    /**
+     * 해당 id 목록의 Tale 엔티티를 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
+     * TaleDetailS3Dto 객체로 변환하여 반환합니다.
+     *
+     * @param taleIds Tale 객체 id 리스트
+     * @return
+     */
+    @Override
+    public List<TaleDetailS3Dto> findMultiTaleDetails(List<Long> taleIds) {
+        QTale qTale = QTale.tale;
+        return queryFactory.select(new QTaleDetailS3Dto(
+                        qTale.taleId,
+                        qTale.title,
+                        qTale.contentS3Key,
+                        qTale.imagesS3KeyPrefix))
+                .from(qTale)
+                .where(qTale.taleId.in(taleIds))
+                .fetch();
     }
 
     /**

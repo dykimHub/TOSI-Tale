@@ -13,9 +13,11 @@ public interface TaleRepositoryCustom {
 
     Optional<TaleDto> findTale(Long taleId);
 
-    List<TaleDto> findMultiTales(List<Long> cacheMissedIds);
+    List<TaleDto> findMultiTales(List<Long> taleIds);
 
     Optional<TaleDetailS3Dto> findTaleDetail(Long taleId);
+
+    List<TaleDetailS3Dto> findMultiTaleDetails(List<Long> taleIds);
 
     List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
 
