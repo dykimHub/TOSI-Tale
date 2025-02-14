@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface TaleService {
 
-    TaleDto.TaleDtos findTaleList(Pageable pageable);
+    List<TaleDto> findTaleList(Pageable pageable);
 
     TaleCacheDto findTale(Long taleId);
 
@@ -21,7 +21,7 @@ public interface TaleService {
 
     TaleDetailDto findTaleDetail(Long taleId);
 
-    List<TaleDetailCacheDto> findMultiTaledetails(List<Long> taleIds);
+    List<TaleDetailCacheDto> findMultiTaleDetails(List<Long> taleIds);
 
     List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
 

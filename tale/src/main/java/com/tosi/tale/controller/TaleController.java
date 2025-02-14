@@ -30,13 +30,13 @@ public class TaleController {
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<TaleDto.TaleDtos> findTaleList(
+    public ResponseEntity<List<TaleDto>> findTaleList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "regDate") String sort,
             @RequestParam(defaultValue = "desc") String dir
     ) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.fromString(dir), sort));
-        TaleDto.TaleDtos taleDtoList = taleService.findTaleList(pageable);
+        List<TaleDto> taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
                 .body(taleDtoList);
     }
@@ -69,7 +69,7 @@ public class TaleController {
     @Operation(summary = "동화 상세 여러 개 조회")
     @GetMapping("/content/bulk")
     public ResponseEntity<List<TaleDetailCacheDto>> findTaleDetail(@RequestParam List<Long> taleIds) {
-        List<TaleDetailCacheDto> taleDetailCacheDtos = taleService.findMultiTaledetails(taleIds);
+        List<TaleDetailCacheDto> taleDetailCacheDtos = taleService.findMultiTaleDetails(taleIds);
         return ResponseEntity.ok()
                 .body(taleDetailCacheDtos);
     }

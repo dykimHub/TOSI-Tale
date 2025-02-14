@@ -12,7 +12,6 @@ import com.tosi.tale.exception.ExceptionCode;
 import com.tosi.tale.repository.TaleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -34,28 +33,24 @@ public class TaleServiceImpl implements TaleService {
     private String userURL;
 
     /**
-     * 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
-     * 페이지별 동화 목록(#페이지번호)을 캐시에 등록합니다.
+     * 정렬 조건에 대한 특정 페이지의 동화 목록을 TaleDto 객체 리스트로 반환합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return TaleDto 객체 리스트를 감싼 TaleDtos 객체
+     * @return TaleDto 객체 리스트
      * @throws CustomException 동화 목록이 없을 경우 예외 처리
      */
-    @Cacheable(value = "taleListCache", key = "#pageable.pageNumber")
     @Override
-    public TaleDto.TaleDtos findTaleList(Pageable pageable) {
+    public List<TaleDto> findTaleList(Pageable pageable) {
         List<TaleDto> taleDtoList = taleRepository.findTaleList(pageable);
 
         if (taleDtoList.isEmpty())
-            throw new CustomException(ExceptionCode.ALL_TALES_NOT_FOUND);
+            throw new CustomException(ExceptionCode.PARTIAL_TALES_NOT_FOUND);
 
-        return new TaleDto.TaleDtos(
-                taleDtoList.stream()
-                        .map(taleDto -> taleDto.withThumbnailS3URL(
-                                s3Service.findS3URL(taleDto.getThumbnailS3Key()))
-                        )
-                        .toList()
-        );
+        return taleDtoList.stream()
+                .map(taleDto -> taleDto.withThumbnailS3URL(
+                        s3Service.findS3URL(taleDto.getThumbnailS3Key()))
+                )
+                .toList();
     }
 
     /**
@@ -92,6 +87,7 @@ public class TaleServiceImpl implements TaleService {
      *
      * @param taleIds Tale 객체 id 목록
      * @return TaleCacheDTO 객체 리스트
+     * @throws CustomException 해당 id 목록의 동화가 DB에 없을 경우 예외 처리
      */
     @Override
     public List<TaleCacheDto> findMultiTales(List<Long> taleIds) {
@@ -119,6 +115,8 @@ public class TaleServiceImpl implements TaleService {
 
         // 캐시에 없는 동화 ID 리스트 대해 DB에서 동화 정보를 조회합니다.
         List<TaleDto> taleDtos = taleRepository.findMultiTales(new ArrayList<>(missingTaleIndexMap.keySet()));
+        if (taleDtos.isEmpty())
+            throw new CustomException(ExceptionCode.PARTIAL_TALES_NOT_FOUND);
 
         // DB에서 조회한 동화 정보를 동화 ID를 key로 하는 맵으로 생성합니다.
         // S3에서 썸네일 URL을 세팅하고, TaleCacheDto로 형변환 합니다.
@@ -137,8 +135,6 @@ public class TaleServiceImpl implements TaleService {
             int missingIndex = entry.getValue();
 
             TaleCacheDto taleCacheDto = taleDtoMap.get(missingTaleId);
-            if (taleCacheDto == null)
-                throw new CustomException(ExceptionCode.TALE_NOT_FOUND);
 
             taleCacheDtos.set(missingIndex, taleCacheDto);
             newTaleCacheDtoMap.put(CachePrefix.TALE.buildCacheKey(missingTaleId), taleCacheDto);
@@ -157,7 +153,6 @@ public class TaleServiceImpl implements TaleService {
      *
      * @param taleId Tale 객체 id
      * @return TaleDetailDto 객체
-     * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
     @Override
     public TaleDetailDto findTaleDetail(Long taleId) {
@@ -183,9 +178,10 @@ public class TaleServiceImpl implements TaleService {
      *
      * @param taleIds Tale 객체 id 목록
      * @return TaleDetailCacheDTO 객체 리스트
+     * @throws CustomException 해당 id 목록의 동화가 DB에 없을 경우 예외 처리
      */
     @Override
-    public List<TaleDetailCacheDto> findMultiTaledetails(List<Long> taleIds) {
+    public List<TaleDetailCacheDto> findMultiTaleDetails(List<Long> taleIds) {
         // 동화 ID 리스트를 캐시 키 리스트로 변환합니다.
         List<String> cacheKeys = taleIds.stream()
                 .map(CachePrefix.TALE_DETAIL::buildCacheKey)
@@ -201,6 +197,8 @@ public class TaleServiceImpl implements TaleService {
 
         // 캐시가 존재하지 않으면 동화 ID 목록을 DB에서 조회합니다.
         List<TaleDetailS3Dto> taleDetailS3Dtos = taleRepository.findMultiTaleDetails(taleIds);
+        if (taleDetailS3Dtos.isEmpty())
+            throw new CustomException(ExceptionCode.PARTIAL_TALES_NOT_FOUND);
 
         // S3에서 동화 본문, 등장인물, 삽화 URL 목록을 가져와 TaleDetailCacheDto 객체 리스트를 생성합니다.
         List<TaleDetailCacheDto> newTaleDetailCacheDtos = taleDetailS3Dtos.stream()
