@@ -1,7 +1,7 @@
 package com.tosi.tale.service;
 
-import com.tosi.common.cache.CachePrefix;
-import com.tosi.common.cache.TaleCacheDto;
+import com.tosi.common.client.ApiClient;
+import com.tosi.common.constants.ApiPaths;
 import com.tosi.common.constants.CachePrefix;
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
@@ -14,11 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +28,8 @@ public class TaleServiceImpl implements TaleService {
     private final TaleRepository taleRepository;
     private final S3Service s3Service;
     private final JosaService josaService;
-    private final RestTemplate restTemplate;
     private final CacheService cacheService;
+    private final ApiClient apiClient;
     @Value("${service.user.url}")
     private String userURL;
 
@@ -347,10 +344,8 @@ public class TaleServiceImpl implements TaleService {
     public Long findUserAuthorization(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", accessToken);
-        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         try {
-            Long userId = restTemplate.exchange(userURL + "/auth",
-                    HttpMethod.GET, httpEntity, Long.class).getBody();
+            Long userId = apiClient.fetchObject(ApiPaths.AUTH.buildPath(userURL), headers, Long.class);
             return userId;
         } catch (Exception e) {
             throw new CustomException(ExceptionCode.INVALID_TOKEN);
