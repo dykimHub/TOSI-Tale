@@ -1,4 +1,4 @@
-package com.tosi.common.cache;
+package com.tosi.common.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

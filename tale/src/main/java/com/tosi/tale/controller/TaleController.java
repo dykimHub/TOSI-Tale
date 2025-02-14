@@ -1,7 +1,7 @@
 package com.tosi.tale.controller;
 
-import com.tosi.common.cache.TaleCacheDto;
-import com.tosi.common.cache.TaleDetailCacheDto;
+import com.tosi.common.dto.TaleCacheDto;
+import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.dto.TalePageRequestDto;

@@ -1,10 +1,12 @@
 package com.tosi.tale.service;
 
 import com.tosi.common.cache.CachePrefix;
-import com.tosi.common.cache.CacheService;
 import com.tosi.common.cache.TaleCacheDto;
-import com.tosi.common.cache.TaleDetailCacheDto;
+import com.tosi.common.constants.CachePrefix;
+import com.tosi.common.dto.TaleCacheDto;
+import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.common.exception.CustomException;
+import com.tosi.common.service.CacheService;
 import com.tosi.tale.dto.*;
 import com.tosi.tale.exception.ExceptionCode;
 import com.tosi.tale.repository.TaleRepository;

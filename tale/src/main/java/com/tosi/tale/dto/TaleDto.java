@@ -1,7 +1,7 @@
 package com.tosi.tale.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.tosi.common.cache.TaleCacheDto;
+import com.tosi.common.dto.TaleCacheDto;
 import lombok.*;
 
 import java.util.List;
@@ -38,6 +38,20 @@ public class TaleDto {
         this.ttsLength = ttsLength;
     }
 
+    /**
+     * TaleDto를 TaleCacheDto로 변환하여 반환합니다.
+     *
+     * @return 변환된 TaleCacheDto 객체
+     */
+    public TaleCacheDto toTaleCacheDto() {
+        return TaleCacheDto.builder()
+                .taleId(this.getTaleId())
+                .title(this.getTitle())
+                .thumbnailS3URL(this.getThumbnailS3URL())
+                .ttsLength(this.getTtsLength())
+                .build();
+    }
+
     /*
      * Wrapper Class; TaleDto 객체 리스트를 하나의 객체로 감싸는 클래스
      * Redis에 TaleDto 객체 리스트를 저장할 때 단일 객체로 감싸서 직렬화/역직렬화 과정에서 명확한 구조 유지
@@ -50,20 +64,6 @@ public class TaleDto {
         public TaleDtos(List<TaleDto> taleDtos) {
             this.taleDtos = taleDtos;
         }
-    }
-
-    /**
-     * TaleDto를 TaleCacheDto로 변환하여 반환합니다.
-     *
-     * @return 변환된 TaleCacheDto 객체
-     */
-    public TaleCacheDto toTaleCacheDto(){
-        return TaleCacheDto.builder()
-                .taleId(this.getTaleId())
-                .title(this.getTitle())
-                .thumbnailS3URL(this.getThumbnailS3URL())
-                .ttsLength(this.getTtsLength())
-                .build();
     }
 }
 

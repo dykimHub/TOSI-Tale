@@ -1,4 +1,4 @@
-package com.tosi.common.cache;
+package com.tosi.common.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

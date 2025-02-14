@@ -1,6 +1,6 @@
 package com.tosi.tale.dto;
 
-import com.tosi.common.cache.TaleDetailCacheDto;
+import com.tosi.common.dto.TaleDetailCacheDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

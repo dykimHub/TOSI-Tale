@@ -1,4 +1,4 @@
-package com.tosi.common.cache;
+package com.tosi.common.constants;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
