@@ -342,12 +342,9 @@ public class TaleServiceImpl implements TaleService {
     public Long findUserAuthorization(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", accessToken);
-        try {
-            Long userId = apiClient.fetchObject(ApiPaths.AUTH.buildPath(userURL), headers, Long.class);
-            return userId;
-        } catch (Exception e) {
-            throw new CustomException(ExceptionCode.INVALID_TOKEN);
-        }
+        Long userId = apiClient.getObject(ApiPaths.AUTH.buildPath(userURL), headers, Long.class);
+        return userId;
+
     }
 
 
