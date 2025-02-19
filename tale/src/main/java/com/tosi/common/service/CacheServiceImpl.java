@@ -48,7 +48,7 @@ public class CacheServiceImpl implements CacheService {
         List<Object> cachedDtos = redisTemplate.opsForValue().multiGet(keys);
         log.info("Cache Hit: {}", keys);
         return cachedDtos.stream()
-                .filter(Objects::nonNull)
+                .filter(Objects::nonNull) // null 값(조회되지 않은 캐시) 제외
                 .map(type::cast)
                 .toList();
     }
