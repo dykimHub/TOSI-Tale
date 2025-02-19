@@ -2,12 +2,12 @@ package com.tosi.tale.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.tosi.common.dto.TaleCacheDto;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
 
-
-@With
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TaleDto {
@@ -43,11 +43,11 @@ public class TaleDto {
      *
      * @return 변환된 TaleCacheDto 객체
      */
-    public TaleCacheDto toTaleCacheDto() {
+    public TaleCacheDto toWithoutS3Key(String thumbnailS3URL) {
         return TaleCacheDto.builder()
                 .taleId(this.getTaleId())
                 .title(this.getTitle())
-                .thumbnailS3URL(this.getThumbnailS3URL())
+                .thumbnailS3URL(thumbnailS3URL)
                 .ttsLength(this.getTtsLength())
                 .build();
     }

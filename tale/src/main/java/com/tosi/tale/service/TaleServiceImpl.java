@@ -69,21 +69,15 @@ public class TaleServiceImpl implements TaleService {
     @Override
     public TaleCacheDto findTale(Long taleId) {
         String cacheKey = CachePrefix.TALE.buildCacheKey(taleId);
-        TaleCacheDto taleCacheDto = cacheService.getCache(cacheKey, TaleCacheDto.class);
+        return cacheService.getCache(cacheKey, TaleCacheDto.class)
+                .orElseGet(() -> { // 캐시에 없으면
+                    TaleCacheDto newTaleCacheDto = taleRepository.findTale(taleId) // DB 조회
+                            .map(t -> t.toWithoutS3Key(s3Service.findS3URL(t.getThumbnailS3Key()))) // S3 URL 추가
+                            .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
 
-        if (taleCacheDto != null)
-            return taleCacheDto;
-
-        TaleDto taleDto = taleRepository.findTale(taleId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
-
-        String thumbnailS3URL = s3Service.findS3URL(taleDto.getThumbnailS3Key());
-        TaleCacheDto newTaleCacheDto = taleDto.withThumbnailS3URL(thumbnailS3URL).toTaleCacheDto();
-
-        cacheService.setCache(cacheKey, newTaleCacheDto, 6, TimeUnit.HOURS);
-
-        return newTaleCacheDto;
-
+                    cacheService.setCache(cacheKey, newTaleCacheDto, 1, TimeUnit.HOURS); // 캐시 등록
+                    return newTaleCacheDto;
+                });
     }
 
     /**
@@ -128,7 +122,7 @@ public class TaleServiceImpl implements TaleService {
         Map<Long, TaleCacheDto> taleDtoMap = taleDtos.stream()
                 .collect(Collectors.toMap(
                         TaleDto::getTaleId, // key
-                        t -> t.withThumbnailS3URL(s3Service.findS3URL(t.getThumbnailS3Key())).toTaleCacheDto()) // value
+                        t -> t.toWithoutS3Key(s3Service.findS3URL(t.getThumbnailS3Key()))) // value
                 );
 
         // DB에서 조회한 동화 정보를 taleCacheDtos 리스트에 채웁니다.
