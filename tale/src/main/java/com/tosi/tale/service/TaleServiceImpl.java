@@ -1,13 +1,18 @@
 package com.tosi.tale.service;
 
 import com.tosi.common.client.ApiClient;
+import com.tosi.common.client.ApiUtils;
 import com.tosi.common.constants.ApiPaths;
 import com.tosi.common.constants.CachePrefix;
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
+import com.tosi.common.dto.TalePageDto;
 import com.tosi.common.exception.CustomException;
 import com.tosi.common.service.CacheService;
-import com.tosi.tale.dto.*;
+import com.tosi.tale.dto.TaleDetailDto;
+import com.tosi.tale.dto.TaleDetailS3Dto;
+import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TalePageRequestDto;
 import com.tosi.tale.exception.ExceptionCode;
 import com.tosi.tale.repository.TaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -245,24 +250,21 @@ public class TaleServiceImpl implements TaleService {
      *
      * @param talePageRequestDto 동화 본문, 삽화 정보, 이름 맵 등이 포함된 TalePageRequestDto 객채
      * @return TalePageResponseDto 리스트
+     * @throws CustomException talePageRequestDto 객체가 비어있는 경우 예외 처리
      */
     @Override
-    public List<TalePageResponseDto> createTalePages(TalePageRequestDto talePageRequestDto) {
+    public List<TalePageDto> createTalePages(TalePageRequestDto talePageRequestDto) {
         if (talePageRequestDto == null)
             throw new CustomException(ExceptionCode.PAGE_REQUEST_NOT_FOUND);
 
+        // 등장인물 이름을 사용자 이름으로 변환
         String changedContent = replaceToUserName(
                 talePageRequestDto.getTaleDetailDto().getContent(),
                 talePageRequestDto.getTaleDetailDto().getCharacters(),
                 talePageRequestDto.getNameMap()
         );
-        String[] splitContent = changedContent.split("-----");
-        List<TalePageResponseDto> talePageResponseDtoList = matchImagesWithContent(
-                splitContent,
-                talePageRequestDto.getTaleDetailDto().getImages()
-        );
 
-        return talePageResponseDtoList;
+        return ApiUtils.createTalePages(changedContent.split("-----"), talePageRequestDto.getTaleDetailDto().getImages());
     }
 
     /**
@@ -293,42 +295,6 @@ public class TaleServiceImpl implements TaleService {
         }
 
         return sb.toString();
-    }
-
-    /**
-     * 이름이 매핑된 동화로 페이지를 생성합니다.
-     * 왼쪽 페이지는 삽화가 포함되고, 오른쪽 페이지는 동화 본문을 2문장씩 삽입합니다.
-     *
-     * @param splitContent 한 삽화에 대응하는 본문 내용 배열
-     * @param images       삽화 주소 리스트
-     * @return TalePageResponseDto 객체 리스트
-     */
-    private List<TalePageResponseDto> matchImagesWithContent(String[] splitContent, List<String> images) {
-        int pageNum = 1;
-        List<TalePageResponseDto> talePageResponseDtoList = new ArrayList<>();
-
-        for (int i = 0; i < images.size(); i++) {
-            String currImgS3URL = images.get(i);
-            String[] lines = splitContent[i].split("\n"); // 문장 단위 배열
-
-            for (int j = 0; j < lines.length; j += 2) {
-                String line1 = lines[j];
-                // line1이 마지막 문장이면 다음 문장은 빈 문장
-                String line2 = (j + 1 < lines.length) ? lines[j + 1] : "";
-
-                talePageResponseDtoList.add(
-                        TalePageResponseDto.builder()
-                                .leftNo(pageNum++)
-                                .left(currImgS3URL)
-                                .rightNo(pageNum++)
-                                .right(line1 + "\n" + line2)
-                                .build()
-                );
-            }
-
-        }
-
-        return talePageResponseDtoList;
     }
 
     /**

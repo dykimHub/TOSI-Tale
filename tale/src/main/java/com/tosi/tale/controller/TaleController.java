@@ -2,10 +2,10 @@ package com.tosi.tale.controller;
 
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
+import com.tosi.common.dto.TalePageDto;
 import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.dto.TalePageRequestDto;
-import com.tosi.tale.dto.TalePageResponseDto;
 import com.tosi.tale.service.TaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -95,9 +95,9 @@ public class TaleController {
             )
     )
     @PostMapping("/read")
-    public ResponseEntity<List<TalePageResponseDto>> createTalePages(@RequestHeader("Authorization") String accessToken, @RequestBody TalePageRequestDto talePageRequestDto) {
+    public ResponseEntity<List<TalePageDto>> createTalePages(@RequestHeader("Authorization") String accessToken, @RequestBody TalePageRequestDto talePageRequestDto) {
         Long userId = taleService.findUserAuthorization(accessToken);
-        List<TalePageResponseDto> talePageResponseDtoList = taleService.createTalePages(talePageRequestDto);
+        List<TalePageDto> talePageResponseDtoList = taleService.createTalePages(talePageRequestDto);
         return ResponseEntity.ok()
                 .body(talePageResponseDtoList);
     }
