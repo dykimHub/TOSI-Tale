@@ -1,7 +1,7 @@
 package com.tosi.tale.repository;
 
 import com.tosi.tale.dto.TaleDetailS3Dto;
-import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TaleDtoImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -9,16 +9,16 @@ import java.util.Optional;
 
 public interface TaleRepositoryCustom {
 
-    List<TaleDto> findTaleList(Pageable pageable);
+    List<TaleDtoImpl> findTaleList(Pageable pageable);
 
-    Optional<TaleDto> findTale(Long taleId);
+    Optional<TaleDtoImpl> findTale(Long taleId);
 
-    List<TaleDto> findMultiTales(List<Long> taleIds);
+    List<TaleDtoImpl> findMultiTales(List<Long> taleIds);
 
     Optional<TaleDetailS3Dto> findTaleDetail(Long taleId);
 
     List<TaleDetailS3Dto> findMultiTaleDetails(List<Long> taleIds);
 
-    List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
+    List<TaleDtoImpl> findTaleByTitle(String titlePart, Pageable pageable);
 
 }
