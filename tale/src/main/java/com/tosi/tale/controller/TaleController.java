@@ -41,14 +41,6 @@ public class TaleController {
                 .body(TaleDtoImplList);
     }
 
-    @Operation(summary = "동화 개요 조회")
-    @GetMapping("/{taleId}")
-    public ResponseEntity<TaleCacheDto> findTale(@Parameter(example = "6") @PathVariable Long taleId) {
-        TaleCacheDto taleCacheDto = taleService.findTale(taleId);
-        return ResponseEntity.ok()
-                .body(taleCacheDto);
-    }
-
     @Operation(summary = "동화 개요 여러 개 조회")
     @GetMapping("/bulk")
     public ResponseEntity<List<TaleCacheDto>> findMultiTales(@RequestParam List<Long> taleIds) {
@@ -56,6 +48,18 @@ public class TaleController {
         return ResponseEntity.ok()
                 .body(taleCacheDtos);
 
+    }
+
+    @Operation(summary = "동화 제목으로 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<TaleCacheDto>> findTaleByTitle(
+            @Parameter(example = "여우") @RequestParam String titlePart,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        Pageable pageable = PageRequest.of(page, 9, Sort.by("title"));
+        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleByTitle(titlePart, pageable);
+        return ResponseEntity.ok()
+                .body(TaleDtoImplList);
     }
 
     @Operation(summary = "동화 상세 조회")
@@ -72,18 +76,6 @@ public class TaleController {
         List<TaleDetailCacheDto> taleDetailCacheDtos = taleService.findMultiTaleDetails(taleIds);
         return ResponseEntity.ok()
                 .body(taleDetailCacheDtos);
-    }
-
-    @Operation(summary = "동화 제목으로 검색")
-    @GetMapping("/search")
-    public ResponseEntity<List<TaleCacheDto>> findTaleByTitle(
-            @Parameter(example = "여우") @RequestParam String titlePart,
-            @RequestParam(defaultValue = "0") int page
-    ) {
-        Pageable pageable = PageRequest.of(page, 9, Sort.by("title"));
-        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleByTitle(titlePart, pageable);
-        return ResponseEntity.ok()
-                .body(TaleDtoImplList);
     }
 
     @Operation(summary = "등장인물 이름을 매핑하고 각 페이지 생성")
