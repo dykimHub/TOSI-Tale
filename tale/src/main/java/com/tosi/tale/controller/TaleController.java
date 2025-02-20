@@ -4,7 +4,7 @@ import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.common.dto.TalePageDto;
 import com.tosi.tale.dto.TaleDetailDto;
-import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TaleDtoImpl;
 import com.tosi.tale.dto.TalePageRequestDto;
 import com.tosi.tale.service.TaleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,15 +30,15 @@ public class TaleController {
 
     @Operation(summary = "동화 목록 조회")
     @GetMapping
-    public ResponseEntity<List<TaleDto>> findTaleList(
+    public ResponseEntity<List<TaleCacheDto>> findTaleList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "regDate") String sort,
             @RequestParam(defaultValue = "desc") String dir
     ) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.fromString(dir), sort));
-        List<TaleDto> taleDtoList = taleService.findTaleList(pageable);
+        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
-                .body(taleDtoList);
+                .body(TaleDtoImplList);
     }
 
     @Operation(summary = "동화 개요 조회")
@@ -76,14 +76,14 @@ public class TaleController {
 
     @Operation(summary = "동화 제목으로 검색")
     @GetMapping("/search")
-    public ResponseEntity<List<TaleDto>> findTaleByTitle(
+    public ResponseEntity<List<TaleCacheDto>> findTaleByTitle(
             @Parameter(example = "여우") @RequestParam String titlePart,
             @RequestParam(defaultValue = "0") int page
     ) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by("title"));
-        List<TaleDto> taleDtoList = taleService.findTaleByTitle(titlePart, pageable);
+        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleByTitle(titlePart, pageable);
         return ResponseEntity.ok()
-                .body(taleDtoList);
+                .body(TaleDtoImplList);
     }
 
     @Operation(summary = "등장인물 이름을 매핑하고 각 페이지 생성")

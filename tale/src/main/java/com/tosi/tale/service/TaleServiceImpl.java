@@ -42,24 +42,16 @@ public class TaleServiceImpl implements TaleService {
     private String userURL;
 
     /**
-     * 정렬 조건에 대한 특정 페이지의 동화 목록을 TaleDtoImpl 객체 리스트로 반환합니다.
+     * 정렬 조건에 대한 특정 페이지의 동화 목록을 TaleCacheDto 객체 리스트로 반환합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return TaleDtoImpl 객체 리스트
+     * @return TaleCacheDto 객체 리스트
      * @throws CustomException 동화 목록이 없을 경우 예외 처리
      */
     @Override
-    public List<TaleDtoImpl> findTaleList(Pageable pageable) {
-        List<TaleDtoImpl> TaleDtoImplList = taleRepository.findTaleList(pageable);
-
-        if (TaleDtoImplList.isEmpty())
-            throw new CustomException(ExceptionCode.PARTIAL_TALES_NOT_FOUND);
-
-        return TaleDtoImplList.stream()
-                .map(TaleDtoImpl -> TaleDtoImpl.withThumbnailS3URL(
-                        s3Service.findS3URL(TaleDtoImpl.getThumbnailS3Key()))
-                )
-                .toList();
+    public List<TaleCacheDto> findTaleList(Pageable pageable) {
+        List<Long> taleIds = taleRepository.findTaleIdList(pageable);
+        return findMultiTales(taleIds);
     }
 
     /**
@@ -79,7 +71,7 @@ public class TaleServiceImpl implements TaleService {
                             .map(t -> t.withS3URL(s3Service.findS3URL(t.getThumbnailS3Key()))) // S3 URL 추가
                             .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
 
-                    cacheService.setCache(cacheKey, newTaleCacheDto, 1, TimeUnit.HOURS); // 캐시 등록
+                    cacheService.setCache(cacheKey, newTaleCacheDto, 2, TimeUnit.HOURS); // 캐시 등록
                     return newTaleCacheDto;
                 });
     }
@@ -108,7 +100,7 @@ public class TaleServiceImpl implements TaleService {
         // 캐싱용 Map(key: 캐시 키, value: 동화 객체)
         Map<String, TaleCacheDto> cacheDtoMap = cacheService.createCacheMap(missingTaleDtoMap, CachePrefix.TALE);
         // 동화 캐시 일괄 업데이트
-        cacheService.setMultiCaches(cacheDtoMap, 6, TimeUnit.HOURS);
+        cacheService.setMultiCaches(cacheDtoMap, 2, TimeUnit.HOURS);
         // 캐시에 있던 동화 객체와 DB에 있던 동화 객체 리스트 순서대로 반환
         return taleIds.stream()
                 .map(id -> cachedTaleDtoMap.getOrDefault(id, missingTaleDtoMap.get(id)))
@@ -193,26 +185,24 @@ public class TaleServiceImpl implements TaleService {
     }
 
     /**
-     * 제목의 일부를 포함하는 동화 목록을 TaleDtoImpl 객체 리스트로 반환합니다.
+     * 검색된 제목의 일부를 포함하는 해당 페이지의 동화 목록을 TaleCacheDto 객체 리스트로 반환합니다.
      *
      * @param titlePart 검색할 동화 제목 일부
      * @param pageable  페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return 검색된 제목을 포함하는 TaleDtoImpl 객체 리스트
+     * @return TaleCacheDto 객체 리스트
      */
     @Override
-    public List<TaleDtoImpl> findTaleByTitle(String titlePart, Pageable pageable) {
-        return taleRepository.findTaleByTitle(titlePart, pageable).stream()
-                .map(t -> t.withThumbnailS3URL(
-                        s3Service.findS3URL(t.getThumbnailS3Key())))
-                .toList();
+    public List<TaleCacheDto> findTaleByTitle(String titlePart, Pageable pageable) {
+        List<Long> taleIds = taleRepository.findTaleByTitle(titlePart, pageable);
+        return findMultiTales(taleIds);
     }
 
     /**
      * TaleDto를 상속하는 객체 리스트를 받아서 TaleCacheDto 맵으로 변환합니다.
      *
      * @param TaleDtoList 동화 객체(TaleDto, TaleCacheDto) 리스트
+     * @param <T>         TaleDto를 상속하는 모든 클래스 타입 가능
      * @return key: 동화 Id, value: TaleCacheDto 객체인 Map
-     * @param <T> TaleDto를 상속하는 모든 클래스 타입 가능
      */
     private <T extends TaleDto> Map<Long, TaleCacheDto> createTaleDtoMap(List<T> TaleDtoList) {
         return TaleDtoList.stream().collect(Collectors.toMap(

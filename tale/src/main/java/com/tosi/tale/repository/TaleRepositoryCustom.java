@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TaleRepositoryCustom {
 
-    List<TaleDtoImpl> findTaleList(Pageable pageable);
+    List<Long> findTaleIdList(Pageable pageable);
 
     Optional<TaleDtoImpl> findTale(Long taleId);
 
@@ -19,6 +19,6 @@ public interface TaleRepositoryCustom {
 
     List<TaleDetailS3Dto> findMultiTaleDetails(List<Long> taleIds);
 
-    List<TaleDtoImpl> findTaleByTitle(String titlePart, Pageable pageable);
+    List<Long> findTaleByTitle(String titlePart, Pageable pageable);
 
 }

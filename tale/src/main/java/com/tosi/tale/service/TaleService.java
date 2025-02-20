@@ -5,7 +5,7 @@ import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.common.dto.TalePageDto;
 import com.tosi.tale.dto.TaleDetailDto;
-import com.tosi.tale.dto.TaleDto;
+import com.tosi.tale.dto.TaleDtoImpl;
 import com.tosi.tale.dto.TalePageRequestDto;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface TaleService {
 
-    List<TaleDto> findTaleList(Pageable pageable);
+    List<TaleCacheDto> findTaleList(Pageable pageable);
 
     TaleCacheDto findTale(Long taleId);
 
@@ -23,7 +23,7 @@ public interface TaleService {
 
     List<TaleDetailCacheDto> findMultiTaleDetails(List<Long> taleIds);
 
-    List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable);
+    List<TaleCacheDto> findTaleByTitle(String titlePart, Pageable pageable);
 
     List<TalePageDto> createTalePages(TalePageRequestDto talePageRequestDto);
 
