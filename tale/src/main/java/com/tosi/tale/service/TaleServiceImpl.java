@@ -91,26 +91,33 @@ public class TaleServiceImpl implements TaleService {
     }
 
     /**
-     * 동화 본문, 등장인물, 삽화 등을 포함한 상세 정보를 TaleDetailDto 객체로 반환합니다.
+     * 동화 본문, 등장인물, 삽화 등을 포함한 동화 상세 정보를 반환합니다.
+     * 해당 동화 Id를 캐시에서 조회합니다.
+     * 캐시에 없으면 DB, S3에서 필요한 정보를 조회한 다음 TaleDetail 객체를 생성하고 15분 동안 캐시에 등록합니다.
      *
      * @param taleId Tale 객체 id
-     * @return TaleDetailDto 객체
+     * @return TaleDetailCacheDto 객체
      */
     @Override
-    public TaleDetailDto findTaleDetail(Long taleId) {
-        TaleDetailCacheDto taleDetailCacheDto = cacheService.getCache(CachePrefix.TALE_DETAIL.buildCacheKey(taleId), TaleDetailCacheDto.class);
-        if (taleDetailCacheDto != null) {
-            return TaleDetailDto.of(taleDetailCacheDto.getTaleId(), taleDetailCacheDto.getTitle(), taleDetailCacheDto.getContent(), taleDetailCacheDto.getCharacters(), taleDetailCacheDto.getImages());
-        }
+    public TaleDetailCacheDto findTaleDetail(Long taleId) {
+        String cacheKey = CachePrefix.TALE_DETAIL.buildCacheKey(taleId);
+        TaleDetailCacheDto taleDetailCacheDto = cacheService.getCache(cacheKey, TaleDetailCacheDto.class)
+                .orElseGet(() -> {
+                            TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTaleDetail(taleId)
+                                    .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
+                            String content = s3Service.findContents(taleDetailS3Dto.getContentS3Key()); // s3에서 동화 본문 조회
+                            String[] characters = s3Service.findCharacters(taleDetailS3Dto.getContentS3Key()); // s3에서 등장인물 조회
+                            List<String> images = s3Service.findImages(taleDetailS3Dto.getImageS3KeyPrefix()); // s3에서 삽화 리스트 조회
 
-        TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTaleDetail(taleId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.TALE_NOT_FOUND));
+                            TaleDetailCacheDto newTaleDetailCacheDto = TaleDetailDto.of(taleDetailS3Dto.getTaleId(), taleDetailS3Dto.getTitle(), content, characters, images).toTaleDetailCacheDto();
+                            cacheService.setCache(cacheKey, newTaleDetailCacheDto, 15, TimeUnit.MINUTES);
+                            return newTaleDetailCacheDto;
 
-        String content = s3Service.findContents(taleDetailS3Dto.getContentS3Key());
-        String[] characters = s3Service.findCharacters(taleDetailS3Dto.getContentS3Key());
-        List<String> images = s3Service.findImages(taleDetailS3Dto.getImageS3KeyPrefix());
+                        }
+                );
 
-        return TaleDetailDto.of(taleDetailS3Dto.getTaleId(), taleDetailS3Dto.getTitle(), content, characters, images);
+        return taleDetailCacheDto;
+
     }
 
     /**

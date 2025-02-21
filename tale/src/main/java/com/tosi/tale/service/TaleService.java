@@ -18,7 +18,7 @@ public interface TaleService {
 
     List<TaleCacheDto> findTaleByTitle(String titlePart, Pageable pageable);
 
-    TaleDetailDto findTaleDetail(Long taleId);
+    TaleDetailCacheDto findTaleDetail(Long taleId);
 
     List<TaleDetailCacheDto> findMultiTaleDetails(List<Long> taleIds);
 
