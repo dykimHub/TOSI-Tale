@@ -4,15 +4,15 @@ import com.tosi.common.client.ApiClient;
 import com.tosi.common.client.ApiUtils;
 import com.tosi.common.constants.ApiPaths;
 import com.tosi.common.constants.CachePrefix;
+import com.tosi.common.dto.TaleBaseDto;
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
-import com.tosi.common.dto.TaleDto;
 import com.tosi.common.dto.TalePageDto;
 import com.tosi.common.exception.CustomException;
 import com.tosi.common.service.CacheService;
 import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDetailS3Dto;
-import com.tosi.tale.dto.TaleDtoImpl;
+import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.dto.TalePageRequestDto;
 import com.tosi.tale.exception.ExceptionCode;
 import com.tosi.tale.repository.TaleRepository;
@@ -185,7 +185,7 @@ public class TaleServiceImpl implements TaleService {
         // 캐싱된 동화 객체 Map(key: 동화 Id, value: 동화 객체)
         Map<Long, TaleCacheDto> cachedTaleDtoMap = createTaleDtoMap(cachedTaleDtoList);
         // 캐싱되지 않은 동화 객체를 DB에서 조회
-        List<TaleDtoImpl> missingTaleDtoList = findMissingTaleList(taleIds, cachedTaleDtoMap);
+        List<TaleDto> missingTaleDtoList = findMissingTaleList(taleIds, cachedTaleDtoMap);
         // DB에서 조회한 동화 객체 Map(key: 동화 Id, value: 동화 객체)
         Map<Long, TaleCacheDto> missingTaleDtoMap = createTaleDtoMap(missingTaleDtoList);
         // 캐싱용 Map(key: 캐시 키, value: 동화 객체)
@@ -205,14 +205,10 @@ public class TaleServiceImpl implements TaleService {
      * @param <T>         TaleDto를 상속하는 모든 클래스 타입 가능
      * @return key: 동화 Id, value: TaleCacheDto 객체인 Map
      */
-    private <T extends TaleDto> Map<Long, TaleCacheDto> createTaleDtoMap(List<T> TaleDtoList) {
+    private <T extends TaleBaseDto> Map<Long, TaleCacheDto> createTaleDtoMap(List<T> TaleDtoList) {
         return TaleDtoList.stream().collect(Collectors.toMap(
-                TaleDto::getTaleId,
-                t -> {
-                    if (t instanceof TaleDtoImpl) // 캐시에 없던 동화 객체는 S3 URL 조회한 후에 TaleCacheDto로 변환
-                        return ((TaleDtoImpl) t).withS3URL(s3Service.findS3URL(t.getThumbnailS3Key()));
-                    else return (TaleCacheDto) t; // 캐시에서 조회된 동화 객체는 그대로 반환
-                }
+                TaleBaseDto::getTaleId,
+                t -> t.toTaleCacheDto(s3Service.findS3URL(t.getThumbnailS3Key())) // 자식 클래스에서 toCacheDto()를 구현한 방식에 따라 적절한 변환
         ));
     }
 
@@ -224,13 +220,13 @@ public class TaleServiceImpl implements TaleService {
      * @return 동화 객체 리스트
      * @throws CustomException DB에서 동화 목록을 찾을 수 없으면 예외 처리
      */
-    private List<TaleDtoImpl> findMissingTaleList(List<Long> taleIds, Map<Long, TaleCacheDto> cachedTaleDtoMap) {
+    private List<TaleDto> findMissingTaleList(List<Long> taleIds, Map<Long, TaleCacheDto> cachedTaleDtoMap) {
         // Map에 없는 id 필터링
         List<Long> missingTaleIds = taleIds.stream()
                 .filter(id -> !cachedTaleDtoMap.containsKey(id))
                 .toList();
         // DB에서 해당 id 목록 조회
-        List<TaleDtoImpl> missingTaleDtoImplList = taleRepository.findMultiTales(missingTaleIds);
+        List<TaleDto> missingTaleDtoImplList = taleRepository.findMultiTales(missingTaleIds);
         if (missingTaleDtoImplList.isEmpty())
             throw new CustomException(ExceptionCode.PARTIAL_TALES_NOT_FOUND);
 

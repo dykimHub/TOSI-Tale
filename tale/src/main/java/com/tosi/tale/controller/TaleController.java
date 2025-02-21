@@ -3,8 +3,6 @@ package com.tosi.tale.controller;
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.common.dto.TalePageDto;
-import com.tosi.tale.dto.TaleDetailDto;
-import com.tosi.tale.dto.TaleDtoImpl;
 import com.tosi.tale.dto.TalePageRequestDto;
 import com.tosi.tale.service.TaleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,17 +34,17 @@ public class TaleController {
             @RequestParam(defaultValue = "desc") String dir
     ) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by(Sort.Direction.fromString(dir), sort));
-        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleList(pageable);
+        List<TaleCacheDto> taleDtoList = taleService.findTaleList(pageable);
         return ResponseEntity.ok()
-                .body(TaleDtoImplList);
+                .body(taleDtoList);
     }
 
     @Operation(summary = "동화 개요 여러 개 조회")
     @GetMapping("/bulk")
     public ResponseEntity<List<TaleCacheDto>> findMultiTales(@RequestParam List<Long> taleIds) {
-        List<TaleCacheDto> taleCacheDtos = taleService.findMultiTales(taleIds);
+        List<TaleCacheDto> taleDtoList = taleService.findMultiTales(taleIds);
         return ResponseEntity.ok()
-                .body(taleCacheDtos);
+                .body(taleDtoList);
 
     }
 
@@ -57,15 +55,15 @@ public class TaleController {
             @RequestParam(defaultValue = "0") int page
     ) {
         Pageable pageable = PageRequest.of(page, 9, Sort.by("title"));
-        List<TaleCacheDto> TaleDtoImplList = taleService.findTaleByTitle(titlePart, pageable);
+        List<TaleCacheDto> taleDtoList = taleService.findTaleByTitle(titlePart, pageable);
         return ResponseEntity.ok()
-                .body(TaleDtoImplList);
+                .body(taleDtoList);
     }
 
     @Operation(summary = "동화 상세 조회")
     @GetMapping("/content/{taleId}")
-    public ResponseEntity<TaleDetailDto> findTaleDetail(@Parameter(example = "6") @PathVariable Long taleId) {
-        TaleDetailDto taleDetailDto = taleService.findTaleDetail(taleId);
+    public ResponseEntity<TaleDetailCacheDto> findTaleDetail(@Parameter(example = "6") @PathVariable Long taleId) {
+        TaleDetailCacheDto taleDetailDto = taleService.findTaleDetail(taleId);
         return ResponseEntity.ok()
                 .body(taleDetailDto);
     }
@@ -73,9 +71,9 @@ public class TaleController {
     @Operation(summary = "동화 상세 여러 개 조회")
     @GetMapping("/content/bulk")
     public ResponseEntity<List<TaleDetailCacheDto>> findTaleDetail(@RequestParam List<Long> taleIds) {
-        List<TaleDetailCacheDto> taleDetailCacheDtos = taleService.findMultiTaleDetails(taleIds);
+        List<TaleDetailCacheDto> taleDetailDtoList = taleService.findMultiTaleDetails(taleIds);
         return ResponseEntity.ok()
-                .body(taleDetailCacheDtos);
+                .body(taleDetailDtoList);
     }
 
     @Operation(summary = "등장인물 이름을 매핑하고 각 페이지 생성")

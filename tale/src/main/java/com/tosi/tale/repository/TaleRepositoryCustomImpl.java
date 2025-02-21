@@ -5,9 +5,9 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tosi.tale.dto.QTaleDetailS3Dto;
-import com.tosi.tale.dto.QTaleDtoImpl;
+import com.tosi.tale.dto.QTaleDto;
 import com.tosi.tale.dto.TaleDetailS3Dto;
-import com.tosi.tale.dto.TaleDtoImpl;
+import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.entity.QTale;
 import com.tosi.tale.entity.Tale;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,10 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Tale 엔티티 리스트를 TaleDtoImpl 객체 리스트로 변환하여 반환합니다.
+     * Tale 엔티티 리스트를 TaleDto 객체 리스트로 변환하여 반환합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return TaleDtoImpl 객체 리스트
+     * @return TaleDto 객체 리스트
      */
     @Override
     public List<Long> findTaleIdList(Pageable pageable) {
@@ -45,15 +45,15 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
     }
 
     /**
-     * 해당 id의 Tale 엔티티를 TaleDtoImpl 객체로 변환하여 반환합니다.
+     * 해당 id의 Tale 엔티티를 TaleDto 객체로 변환하여 반환합니다.
      *
      * @param taleId Tale 객체 id
      * @return Optional로 감싼 TaleDtoImpl 객체
      */
     @Override
-    public Optional<TaleDtoImpl> findTale(Long taleId) {
+    public Optional<TaleDto> findTale(Long taleId) {
         QTale qTale = QTale.tale;
-        return Optional.ofNullable(queryFactory.select(new QTaleDtoImpl(
+        return Optional.ofNullable(queryFactory.select(new QTaleDto(
                         qTale.taleId,
                         qTale.title,
                         qTale.thumbnailS3Key,
@@ -66,15 +66,15 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
 
     /**
      * 해당 id 목록의 Tale 엔티티를 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
-     * TaleDtoImpl 객체로 변환하여 반환합니다.
+     * TaleDto 객체로 변환하여 반환합니다.
      *
      * @param taleIds Tale 객체 id 리스트
-     * @return TaleDtoImpl 객체 리스트
+     * @return TaleDto 객체 리스트
      */
     @Override
-    public List<TaleDtoImpl> findMultiTales(List<Long> taleIds) {
+    public List<TaleDto> findMultiTales(List<Long> taleIds) {
         QTale qTale = QTale.tale;
-        return queryFactory.select(new QTaleDtoImpl(
+        return queryFactory.select(new QTaleDto(
                         qTale.taleId,
                         qTale.title,
                         qTale.thumbnailS3Key,
@@ -130,7 +130,7 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
      *
      * @param titlePart 검색할 동화 제목 일부
      * @param pageable  페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return TaleDtoImpl 객체 리스트(결과가 없을 경우 빈 리스트 반환)
+     * @return TaleDto 객체 리스트(결과가 없을 경우 빈 리스트 반환)
      */
     @Override
     public List<Long> findTaleByTitle(String titlePart, Pageable pageable) {
