@@ -4,9 +4,9 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tosi.tale.dto.QTaleDetailS3Dto;
+import com.tosi.tale.dto.QTaleDetailDto;
 import com.tosi.tale.dto.QTaleDto;
-import com.tosi.tale.dto.TaleDetailS3Dto;
+import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.entity.QTale;
 import com.tosi.tale.entity.Tale;
@@ -92,9 +92,9 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
      * @return Optional로 감싼 TaleDetailS3Dto 객체
      */
     @Override
-    public Optional<TaleDetailS3Dto> findTaleDetail(Long taleId) {
+    public Optional<TaleDetailDto> findTaleDetail(Long taleId) {
         QTale qTale = QTale.tale;
-        return Optional.ofNullable(queryFactory.select(new QTaleDetailS3Dto(
+        return Optional.ofNullable(queryFactory.select(new QTaleDetailDto(
                         qTale.taleId,
                         qTale.title,
                         qTale.contentS3Key,
@@ -113,9 +113,9 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
      * @return
      */
     @Override
-    public List<TaleDetailS3Dto> findMultiTaleDetails(List<Long> taleIds) {
+    public List<TaleDetailDto> findMultiTaleDetails(List<Long> taleIds) {
         QTale qTale = QTale.tale;
-        return queryFactory.select(new QTaleDetailS3Dto(
+        return queryFactory.select(new QTaleDetailDto(
                         qTale.taleId,
                         qTale.title,
                         qTale.contentS3Key,
