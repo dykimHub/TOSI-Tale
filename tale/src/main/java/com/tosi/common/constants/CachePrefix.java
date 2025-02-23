@@ -14,11 +14,12 @@ public enum CachePrefix {
     TALE_LIST("taleListPage::"),
 
     // 회원 서비스
-    POPULAR_TALE("popularTaleIdCache::"),
+    POPULAR_TALE("popularTaleCache::"),
     FAVORITE_TALE("favoriteTaleIdCache::"),
 
     // 커스텀 동화 서비스
     CUSTOM_TALE("customTaleCache::"),
+    MY_CUSTOM_TALE("myCustomTaleCache::"),
     CUSTOM_TALE_DETAIL("customTaleDetailCache::");
 
 

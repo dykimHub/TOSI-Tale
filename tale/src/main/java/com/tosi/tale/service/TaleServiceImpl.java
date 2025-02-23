@@ -66,14 +66,14 @@ public class TaleServiceImpl implements TaleService {
 
     /**
      * 주어진 동화 ID 리스트에 대해 동화 정보를 조회합니다.
-     * 회원 서비스에서 요청한 동화 정보는 3시간 동안 캐싱합니다.
+     * 회원 서비스에서 요청한 동화 정보는 1시간 동안 캐싱합니다.
      *
      * @param taleIds Tale 객체 id 목록
      * @return TaleCacheDTO 객체 리스트
      */
     @Override
     public List<TaleCacheDto> findMultiTales(List<Long> taleIds) {
-        return findMultiTales(taleIds, 3, TimeUnit.HOURS);
+        return findMultiTales(taleIds, 1, TimeUnit.HOURS);
     }
 
     /**
