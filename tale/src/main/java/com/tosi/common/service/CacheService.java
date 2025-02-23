@@ -19,4 +19,8 @@ public interface CacheService {
     void deleteCache(String key);
 
     <T> Map<String, T> createCacheMap(Map<Long, T> dtoMap, CachePrefix cachePrefix);
+
+    <T> List<Long> findMissingIdList(List<Long> ids, Map<Long, T> cachedDtoMap);
+
+    <T> List<T> mergedCachedAndMissing(List<Long> ids, Map<Long, T> cachedDtoMap, Map<Long, T> missingDtoMap);
 }

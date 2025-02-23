@@ -4,7 +4,6 @@ package com.tosi.tale.service;
 import com.tosi.common.dto.TaleCacheDto;
 import com.tosi.common.dto.TaleDetailCacheDto;
 import com.tosi.common.dto.TalePageDto;
-import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TalePageRequestDto;
 import org.springframework.data.domain.Pageable;
 

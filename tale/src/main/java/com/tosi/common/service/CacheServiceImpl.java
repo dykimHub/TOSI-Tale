@@ -31,7 +31,6 @@ public class CacheServiceImpl implements CacheService {
     @Override
     public <T> Optional<T> getCache(String key, Class<T> type) {
         Object cachedDto = redisTemplate.opsForValue().get(key);
-        log.info("Cache Hit: {}", key);
         return Optional.ofNullable(type.cast(cachedDto));
     }
 
@@ -46,7 +45,6 @@ public class CacheServiceImpl implements CacheService {
     @Override
     public <T> List<T> getMultiCaches(List<String> keys, Class<T> type) {
         List<Object> cachedDtos = redisTemplate.opsForValue().multiGet(keys);
-        log.info("Cache Hit: {}", keys);
         return cachedDtos.stream()
                 .filter(Objects::nonNull) // null 값(조회되지 않은 캐시) 제외
                 .map(type::cast)
@@ -69,7 +67,7 @@ public class CacheServiceImpl implements CacheService {
          * redisTemplate이 사용하는 Object 타입으로 저장됩니다.
          */
         redisTemplate.opsForValue().set(key, value, timeout, unit);
-        log.info("Cache Set: {}", key);
+        log.info("Cache Set: {}, TTL: {} {}", key, timeout, unit);
     }
 
     /**
@@ -82,7 +80,6 @@ public class CacheServiceImpl implements CacheService {
     @Override
     public <T> void setMultiCaches(Map<String, T> cacheMap, long timeout, TimeUnit unit) {
         redisTemplate.opsForValue().multiSet(cacheMap);
-        log.info("Cache Set: {}", cacheMap.keySet());
 
         /**
          * MSET 명령은 만료 시간 설정 기능이 없습니다.
@@ -91,6 +88,7 @@ public class CacheServiceImpl implements CacheService {
         for (String key : cacheMap.keySet()) {
             redisTemplate.expire(key, timeout, unit);
         }
+        log.info("Cache Set: {} TTL: {} {}", cacheMap.keySet(), timeout, unit);
 
     }
 
@@ -121,6 +119,35 @@ public class CacheServiceImpl implements CacheService {
 
         return cacheMap;
 
+    }
+
+    /**
+     * 캐시에 없는 Id를 반환합니다.
+     *
+     * @param ids          객체 Id 목록
+     * @param cachedDtoMap 캐싱된 객체 Map
+     * @return Id 리스트
+     */
+    @Override
+    public <T> List<Long> findMissingIdList(List<Long> ids, Map<Long, T> cachedDtoMap) {
+        return ids.stream()
+                .filter(id -> !cachedDtoMap.containsKey(id))
+                .toList();
+    }
+
+    /**
+     * 캐시에 있던 객체와 DB에 있던 객체를 id 목록 순서대로 반환합니다.
+     *
+     * @param ids           객체 id 목록
+     * @param cachedDtoMap  캐싱된 객체 Map
+     * @param missingDtoMap 캐시에 없던 객체 Map
+     * @return 객체 리스트
+     */
+    @Override
+    public <T> List<T> mergedCachedAndMissing(List<Long> ids, Map<Long, T> cachedDtoMap, Map<Long, T> missingDtoMap) {
+        return ids.stream()
+                .map(id -> cachedDtoMap.getOrDefault(id, missingDtoMap.get(id)))
+                .toList();
     }
 
 }
