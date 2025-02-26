@@ -53,11 +53,13 @@ public class TaleServiceImpl implements TaleService {
 
     /**
      * 동화 제목, 동화 표지, TTS 구연 시간 등을 포함한 동화 정보를 반환합니다.
+     * 동화 개요와 관련된 정보(#동화번호)를 캐시에 등록합니다.
      *
      * @param taleId Tale 객체 id
      * @return S3 Key로 생성한 S3 URL을 포함한 TaleDTO 객체 반환
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
+    @Cacheable(value = "taleCache", key = "#taleId")
     @Override
     public TaleDto findTale(Long taleId) {
         TaleDto taleDto = taleRepository.findTale(taleId)
@@ -73,7 +75,7 @@ public class TaleServiceImpl implements TaleService {
      * @return TaleDetailDto 객체
      * @throws CustomException 해당 id의 동화가 없을 경우 예외 처리
      */
-    @Cacheable(value = "taleCache", key = "#taleId")
+    @Cacheable(value = "taleDetailCache", key = "#taleId")
     @Override
     public TaleDetailDto findTaleDetail(Long taleId) {
         TaleDetailS3Dto taleDetailS3Dto = taleRepository.findTaleDetail(taleId)

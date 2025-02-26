@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: tosi-be-tale
-          image: dyckerkim/tosi-be-tale:latest
+          image: dyckerkim/tosi-be-tale:latest # pod 재시작시 최신 이미지 pull
           # livenessProbe: # 헬스 체크
           #   httpGet:
           #     path: /api/tales/1 # 해당 경로로 HTTP 요청을 보내 상태 확인
@@ -46,5 +46,3 @@ spec:
               value: tosi-cc-svc.default
             - name: USER_URL
               value: http://tosi-user-svc.default/api/users
-            - name: SWAGGER_SERVER_URL
-              value: http://tosi-user-svc.default/api/tales
