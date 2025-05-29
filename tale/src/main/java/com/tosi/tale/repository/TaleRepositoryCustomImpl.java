@@ -4,9 +4,9 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tosi.tale.dto.QTaleDetailS3Dto;
+import com.tosi.tale.dto.QTaleDetailDto;
 import com.tosi.tale.dto.QTaleDto;
-import com.tosi.tale.dto.TaleDetailS3Dto;
+import com.tosi.tale.dto.TaleDetailDto;
 import com.tosi.tale.dto.TaleDto;
 import com.tosi.tale.entity.QTale;
 import com.tosi.tale.entity.Tale;
@@ -25,34 +25,30 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
      * Tale 엔티티 리스트를 TaleDto 객체 리스트로 변환하여 반환합니다.
      *
      * @param pageable 페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
-     * @return Optional로 감싼 TaleDto 객체 리스트
+     * @return TaleDto 객체 리스트
      */
     @Override
-    public Optional<List<TaleDto>> findTaleList(Pageable pageable) {
+    public List<Long> findTaleIdList(Pageable pageable) {
         QTale qTale = QTale.tale;
         // QTale의 엔티티 타입(Tale)과 테이블명을 참조하여 tales 테이블의 컬럼을 참조할 동적 경로 생성
         PathBuilder<Tale> pathBuilder = new PathBuilder<>(Tale.class, qTale.getMetadata().getName());
         // Pageable 객체의 Sort 정보를 QueryDSL에서 사용하는 OrderSpecifier로 변환
         List<OrderSpecifier> orders = getOrderSpecifiers(pageable.getSort(), pathBuilder);
 
-        return Optional.ofNullable(queryFactory.select(new QTaleDto(
-                        qTale.taleId,
-                        qTale.title,
-                        qTale.thumbnailS3Key,
-                        qTale.ttsLength))
+        return queryFactory.select(qTale.taleId)
                 .from(qTale)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orders.toArray(new OrderSpecifier[0]))
-                .fetch()
-        );
+                .fetch();
+
     }
 
     /**
      * 해당 id의 Tale 엔티티를 TaleDto 객체로 변환하여 반환합니다.
      *
      * @param taleId Tale 객체 id
-     * @return Optional로 감싼 TaleDto 객체
+     * @return Optional로 감싼 TaleDtoImpl 객체
      */
     @Override
     public Optional<TaleDto> findTale(Long taleId) {
@@ -69,15 +65,36 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
     }
 
     /**
+     * 해당 id 목록의 Tale 엔티티를 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
+     * TaleDto 객체로 변환하여 반환합니다.
+     *
+     * @param taleIds Tale 객체 id 리스트
+     * @return TaleDto 객체 리스트
+     */
+    @Override
+    public List<TaleDto> findMultiTales(List<Long> taleIds) {
+        QTale qTale = QTale.tale;
+        return queryFactory.select(new QTaleDto(
+                        qTale.taleId,
+                        qTale.title,
+                        qTale.thumbnailS3Key,
+                        qTale.ttsLength))
+                .from(qTale)
+                .where(qTale.taleId.in(taleIds))
+                .fetch();
+
+    }
+
+    /**
      * 해당 id의 Tale 엔티티를 TaleDetailS3Dto 객체로 변환하여 반환합니다.
      *
      * @param taleId Tale 객체 id
      * @return Optional로 감싼 TaleDetailS3Dto 객체
      */
     @Override
-    public Optional<TaleDetailS3Dto> findTaleDetail(Long taleId) {
+    public Optional<TaleDetailDto> findTaleDetail(Long taleId) {
         QTale qTale = QTale.tale;
-        return Optional.ofNullable(queryFactory.select(new QTaleDetailS3Dto(
+        return Optional.ofNullable(queryFactory.select(new QTaleDetailDto(
                         qTale.taleId,
                         qTale.title,
                         qTale.contentS3Key,
@@ -89,27 +106,43 @@ public class TaleRepositoryCustomImpl implements TaleRepositoryCustom {
     }
 
     /**
-     * 검색된 Tale 엔티티 리스트를 TaleDto 객체 리스트로 변환하여 반환합니다.
+     * 해당 id 목록의 Tale 엔티티를 SQL IN 절을 사용하여 한 번의 쿼리로 조회합니다.
+     * TaleDetailS3Dto 객체로 변환하여 반환합니다.
+     *
+     * @param taleIds Tale 객체 id 리스트
+     * @return
+     */
+    @Override
+    public List<TaleDetailDto> findMultiTaleDetails(List<Long> taleIds) {
+        QTale qTale = QTale.tale;
+        return queryFactory.select(new QTaleDetailDto(
+                        qTale.taleId,
+                        qTale.title,
+                        qTale.contentS3Key,
+                        qTale.imagesS3KeyPrefix))
+                .from(qTale)
+                .where(qTale.taleId.in(taleIds))
+                .fetch();
+    }
+
+    /**
+     * 검색된 Tale 엔티티 리스트를 TaleDtoImpl 객체 리스트로 변환하여 반환합니다.
      *
      * @param titlePart 검색할 동화 제목 일부
      * @param pageable  페이지 번호, 페이지 크기, 정렬 기준 및 방향을 담고 있는 Pageable 객체
      * @return TaleDto 객체 리스트(결과가 없을 경우 빈 리스트 반환)
      */
     @Override
-    public List<TaleDto> findTaleByTitle(String titlePart, Pageable pageable) {
-        QTale tale = QTale.tale;
+    public List<Long> findTaleByTitle(String titlePart, Pageable pageable) {
+        QTale qTale = QTale.tale;
         // QTale의 엔티티 타입(Tale)과 테이블명을 참조하여 tales 테이블의 컬럼을 참조할 동적 경로 생성
-        PathBuilder<Tale> pathBuilder = new PathBuilder<>(Tale.class, tale.getMetadata().getName());
+        PathBuilder<Tale> pathBuilder = new PathBuilder<>(Tale.class, qTale.getMetadata().getName());
         // Pageable 객체의 Sort 정보를 QueryDSL에서 사용하는 OrderSpecifier로 변환
         List<OrderSpecifier> orders = getOrderSpecifiers(pageable.getSort(), pathBuilder);
 
-        return queryFactory.select(new QTaleDto(
-                        tale.taleId,
-                        tale.title,
-                        tale.thumbnailS3Key,
-                        tale.ttsLength))
-                .from(tale)
-                .where(tale.title.containsIgnoreCase(titlePart))
+        return queryFactory.select(qTale.taleId)
+                .from(qTale)
+                .where(qTale.title.containsIgnoreCase(titlePart))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(orders.toArray(new OrderSpecifier[0]))
