@@ -1,7 +1,7 @@
 # :rabbit: TOSI(The Only Story In the world)를 소개합니다. :tada:
 
 <div align="center">
-<img src="assets/tosi.png" width="" height="150"></img>
+<img src="./assets/tosi.png" width="" height="150"></img>
 
 **TOSI는 어린이들이 혼자서도 재미있게 독서할 수 있는 인터랙티브 동화 구연 서비스입니다.** <br>
 저희 서비스를 통해 '토씨 하나 빼놓지 않고' 이야기에 집중할 수 있습니다. <br>
@@ -12,10 +12,10 @@
 # :sparkle: 서비스 목표
 
 동화 **등장인물의 이름을 아이의 이름으로 바꿔** TTS로 읽어주며, <br>
-아이 혼자서도 동화를 즐길 수 있어서서 미디어 소비 대신 독서 습관 형성을 돕습니다.
+아이 혼자서도 동화에 몰입할 수 있어 미디어 소비 대신 독서 습관 형성을 돕습니다.
 
 동화가 끝나면 OpenAI API를 활용해 **원하는 등장인물과 채팅**하면서, <br>
-이야기에 능동적으로 참여하여 더 몰입감 있는 독서 경험을 제공합니다.
+동화 속 캐릭터들과 상호작용하여 어휘력 및 사회성을 향상시킵니다.
 
 **원하는 키워드와 배경**으로 OpenAI API를 활용해 **커스텀 동화를 제작**하면서, <br>
 매번 새로운 이야기와 삽화로 아이의 상상력을 자극합니다.
@@ -47,7 +47,7 @@ _2차 리팩토링_
 
 ## :pushpin: TOSI 서비스 아키텍처
 
-<img src="/assets/tosi_msa_tale.png" alt="System Architecture" width="700"/>
+<img src="./assets/tosi_msa_tale.png" alt="System Architecture" width="700"/>
 
 ## :deciduous_tree: TOSI-Tale 기술 스택
 
@@ -66,8 +66,8 @@ _2차 리팩토링_
     <th width="50%">동화 목록</th>
   </tr>
   <tr>
-    <td><img src="/assets/main.gif" width="100%"></td>
-    <td><img src="/assets/booklist.gif" width="100%"></td>
+    <td><img src="./assets/main.gif" width="100%"></td>
+    <td><img src="./assets/booklist.gif" width="100%"></td>
   </tr>
   <tr>
     <td>- 비회원용 메인페이지에서는 토씨의 기능에 대해서 음성으로 설명합니다. <br> - 로그인에 성공하면 토씨의 기능을 사용할 수 있습니다.</td>
