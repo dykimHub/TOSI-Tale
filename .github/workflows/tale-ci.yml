@@ -2,7 +2,7 @@ name: TALE CI
 
 # develop 브랜치에 push 되면
 on:
-  push:
+  pull_request:
     branches: ["develop"]
 
 jobs:
@@ -35,6 +35,6 @@ jobs:
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          MYSQL_URL: 127.0.0.1
-          REDIS_URL: localhost
-          USER_URL: http://localhost:8081/api/users
+          MYSQL_URL: ${{ secrets.MYSQL_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          API_HOST: ${{ secrets.API_HOST }}

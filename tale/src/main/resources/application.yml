@@ -47,17 +47,27 @@ cloud:
       secret-key: ${SECRET_KEY}
 service:
   user:
-    url: ${USER_URL}
+    url: ${API_HOST}/api/users
 springdoc:
+  title: Tosi API
   api-docs:
     path: /docs/tales
   swagger-ui:
     urls:
       - name: 동화
-        url: https://www.tosi.world/docs/tales
+        url: ${API_HOST}/docs/tales
       - name: 회원
-        url: https://www.tosi.world/docs/users
+        url: ${API_HOST}/docs/users
       - name: 커스텀 동화
-        url: https://www.tosi.world/docs/custom-tales
+        url: ${API_HOST}/docs/custom-tales
       - name: 채팅
-        url: https://www.tosi.world/docs/chat
+        url: ${API_HOST}/docs/chat
+# 쿠버네티스 프로브(liveness/readiness) 엔드포인트 노출
+management:
+  endpoints: # endpoint's'
+    web:
+      base-path: /actuator/tales
+  endpoint: # endpoint
+    health:
+      probes:
+        enabled: true
