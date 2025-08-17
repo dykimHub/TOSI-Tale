@@ -37,7 +37,7 @@ logging:
 cloud:
   aws:
     s3:
-      bucket: tosibucket
+      bucket: ${BUCKET_NAME}
     stack:
       auto: false
     region:
