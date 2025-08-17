@@ -55,11 +55,11 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --region ap-northeast-2 --name tosiCluster
 
-      # 변경된 이미지 주소를 반영할 수 있도록 apply
+      # 변경된 이미지 주소를 반영할 수 있도록 apply 실행
       - name: Deploy
         run: kubectl apply -f=kubernetes/tale.yml
 
-      # 60초 동안 배포 상태 체크 (성공 시 successfully rolled out 메시지)
+      # 60초 동안 배포 상태 체크 (성공 - successfully rolled out 메시지)
       - name: Check deployment status
         run: |
           kubectl rollout status deployment/tosi-tale-dep --timeout=60s

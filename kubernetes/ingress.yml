@@ -2,11 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tosi-ingress
+  namespace: prod-tosi
   annotations:
     kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: tosi-alb # 그룹당 ALB 1개 생성, host로 구분
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:058264434288:certificate/f166252e-9b06-43ce-a559-8ce64bfcb135
+    alb.ingress.kubernetes.io/target-type: ip # service가 clusterIp이므로 ip 타입만 가능
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:058264434288:certificate/d84e3870-022a-4b82-a74a-d6006f9a6161
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
   labels:
@@ -80,5 +82,12 @@ spec:
             backend:
               service:
                 name: tosi-chat-svc
+                port:
+                  number: 80
+          - path: /actuator/tales
+            pathType: Prefix
+            backend:
+              service:
+                name: tosi-tale-svc
                 port:
                   number: 80
