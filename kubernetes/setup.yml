@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Namespace # 네임스페이스 생성
+metadata:
+  name: prod-tosi
+  labels:
+    env: prod
+    app: tosi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy # 네트워크 정책 생성
+metadata:
+  name: tosi-np
+  namespace: prod-tosi
+spec:
+  podSelector: {} # 네임스페이스 모든 Pod에 적용
+  policyTypes:
+    - Ingress # 기본적으로 모든 Ingress 차단
+
+  ingress: # Ingress 정책 예외
+    # 같은 네임스페이스 내부 Pod 통신 허용
+    - from:
+        - podSelector: {}
+
+      ports:
+        - protocol: TCP
+          port: 80
+---
+# ServiceAccount는 Kubernetes에서 Pod의 신원을 나타내는 계정
+# -> AWS IAM Role과 연결하면 Pod이 해당 Role을 Assume하여 AWS API 접근 가능
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prod-tosi-sa
+  namespace: prod-tosi
