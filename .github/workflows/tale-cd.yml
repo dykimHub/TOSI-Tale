@@ -59,7 +59,7 @@ jobs:
       - name: Deploy
         run: kubectl apply -f=kubernetes/tale.yml
 
-      # 60초 동안 배포 상태 체크 (성공 - successfully rolled out 메시지)
+      # 300초 동안 배포 상태 체크 (성공하면 actions 대시보드에서 rolledout 성공 메시지 출력)
       - name: Check deployment status
         run: |
           kubectl rollout status deployment/tosi-tale-dep -n prod-tosi --timeout=300s
