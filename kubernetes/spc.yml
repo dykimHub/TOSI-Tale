@@ -1,0 +1,64 @@
+# Secrets Store CSI Driver + AWS provider 설치
+# AWS SSM Parameter Store / Secrets Manager에서 어떤 값을 가져올지 정의
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: tale-credentials
+  namespace: prod-tosi
+spec:
+  provider: aws
+  parameters:
+    region: ap-northeast-2
+    # objectName: SSM Parameter 이름
+    # objectType: 가져올 AWS 리소스 타입
+    # object Alias: Pod에 마운트될 파일명
+    objects: |
+      - objectName: "/prod/tosi/tale/db/host" 
+        objectType: "ssmparameter"
+        objectAlias: "MYSQL_URL"
+      - objectName: "/prod/tosi/tale/db/user"
+        objectType: "ssmparameter"
+        objectAlias: "MYSQL_USER"
+      - objectName: "/prod/tosi/tale/db/password"
+        objectType: "ssmparameter"
+        objectAlias: "MYSQL_PASSWORD"
+      - objectName: "/prod/tosi/s3/access"
+        objectType: "ssmparameter"
+        objectAlias: "ACCESS_KEY"
+      - objectName: "/prod/tosi/s3/secret"
+        objectType: "ssmparameter"
+        objectAlias: "SECRET_KEY"
+      - objectName: "/prod/tosi/s3/bucket"
+        objectType: "ssmparameter"
+        objectAlias: "BUCKET_NAME"
+      - objectName: "/prod/tosi/cache/host"
+        objectType: "ssmparameter"
+        objectAlias: "REDIS_URL"
+      - objectName: "/prod/tosi/host"
+        objectType: "ssmparameter"
+        objectAlias: "API_HOST"
+    # 안 넣으면 AWS Pod Identity로 인식 못 함
+    usePodIdentity: "true"
+  # secretObjects: 마운트된 파일 내용을 Kubernetes Secret로 변환
+  # objectName: 파일 이름(Object Alias와 동일해야 함)
+  # key: Secret의 key로 저장될 이름
+  secretObjects:
+    - secretName: tale-credentials
+      type: Opaque
+      data:
+        - objectName: MYSQL_URL
+          key: MYSQL_URL
+        - objectName: MYSQL_USER
+          key: MYSQL_USER
+        - objectName: MYSQL_PASSWORD
+          key: MYSQL_PASSWORD
+        - objectName: ACCESS_KEY
+          key: ACCESS_KEY
+        - objectName: SECRET_KEY
+          key: SECRET_KEY
+        - objectName: BUCKET_NAME
+          key: BUCKET_NAME
+        - objectName: REDIS_URL
+          key: REDIS_URL
+        - objectName: API_HOST
+          key: API_HOST
